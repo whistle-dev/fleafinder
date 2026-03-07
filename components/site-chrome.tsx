@@ -72,7 +72,7 @@ export function SiteChrome({
                 </>
               ) : (
                 <Button asChild size="sm" variant="outline" className="rounded-full">
-                  <Link href={`/${locale}/sign-in`}>{dictionary.navigation.addMarket}</Link>
+                  <Link href={`/${locale}/dashboard?series=new`}>{dictionary.navigation.addMarket}</Link>
                 </Button>
               )}
               
@@ -95,7 +95,7 @@ export function SiteChrome({
               <Link className="hover:text-[var(--ink)] transition-colors" href={`/${locale}/markets`}>
                 {dictionary.navigation.explore}
               </Link>
-              <Link className="hover:text-[var(--ink)] transition-colors" href={`/${locale}/sign-in`}>
+              <Link className="hover:text-[var(--ink)] transition-colors" href={`/${locale}/dashboard?series=new`}>
                 {dictionary.navigation.addMarket}
               </Link>
             </div>

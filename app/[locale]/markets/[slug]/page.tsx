@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { ArrowLeft, CalendarDays, Clock3, Mail, MapPin } from "lucide-react";
 import { notFound } from "next/navigation";
 
@@ -9,6 +8,7 @@ import { getDictionary } from "@/lib/i18n";
 import type { Locale } from "@/lib/types";
 import { createIcsFile, formatDate, formatTimeRange, getNextOccurrence, isLocale } from "@/lib/utils";
 
+import { BackLink } from "@/components/back-link";
 import { MarketMap } from "@/components/market-map";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -67,10 +67,13 @@ export default async function MarketDetailPage({
   return (
     <article className="max-w-5xl mx-auto space-y-12">
       {/* Navigation */}
-      <Link href={`/${locale}/markets`} className="inline-flex items-center gap-2 text-sm font-medium text-[var(--ink-soft)] hover:text-[var(--ink)] transition-colors">
+      <BackLink
+        className="inline-flex items-center gap-2 text-sm font-medium text-[var(--ink-soft)] transition-colors hover:text-[var(--ink)]"
+        fallbackHref={`/${locale}/markets`}
+      >
         <ArrowLeft className="size-4" />
         {dictionary.detail.back}
-      </Link>
+      </BackLink>
 
       {/* Hero Header */}
       <header className="space-y-6 max-w-3xl">
@@ -143,7 +146,7 @@ export default async function MarketDetailPage({
             <h2 className="font-display text-2xl text-[var(--ink)]">
               {locale === "da" ? "Find vej" : "Location"}
             </h2>
-            <div className="h-[400px] overflow-hidden rounded-2xl border border-[var(--line)]">
+            <div className="h-[400px] w-full rounded-[16px] overflow-hidden">
               <MarketMap locale={locale} markets={[market]} />
             </div>
           </div>

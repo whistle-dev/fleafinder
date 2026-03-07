@@ -391,6 +391,18 @@ export async function saveMarketSeriesAction(formData: FormData) {
     redirect(withNotice(returnTo, locale === "da" ? "Du kan kun redigere egne markeder." : "You can only edit your own markets."));
   }
 
+  const isAdmin = profile.role === "admin";
+
+  if (existingSeries?.status === "published" && isAdmin) {
+    const slug = await saveSeriesDirectly(supabase, existingSeries.organizer_id, existingSeries.id, payload, "published");
+    revalidatePath(`/${locale}`);
+    revalidatePath(`/${locale}/markets`);
+    revalidatePath(`/${locale}/markets/${slug}`);
+    revalidatePath(returnTo);
+    revalidatePath(`/${locale}/admin`);
+    redirect(withNotice(returnTo, locale === "da" ? "Marked opdateret og stadig live." : "Market updated and kept live."));
+  }
+
   if (existingSeries?.status === "published") {
     await saveRevision(supabase, existingSeries.id, profile.id, payload);
     revalidatePath(`/${locale}/admin`);
@@ -399,7 +411,9 @@ export async function saveMarketSeriesAction(formData: FormData) {
   }
 
   const nextStatus =
-    intent === "submit"
+    intent === "submit" && isAdmin
+      ? ("published" as const)
+      : intent === "submit"
       ? ("pending_review" as const)
       : existingSeries?.status === "changes_requested"
         ? ("changes_requested" as const)
@@ -416,7 +430,11 @@ export async function saveMarketSeriesAction(formData: FormData) {
   redirect(
     withNotice(
       `${returnTo}?series=${slug}`,
-      intent === "submit"
+      intent === "submit" && isAdmin
+        ? locale === "da"
+          ? "Marked publiceret direkte."
+          : "Market published directly."
+        : intent === "submit"
         ? locale === "da"
           ? "Marked sendt til godkendelse."
           : "Market submitted for review."

@@ -8,14 +8,14 @@ export const DEFAULT_LOCALE: Locale = "da";
 export const COPENHAGEN_CENTER = {
   latitude: 55.6761,
   longitude: 12.5683,
-  zoom: 10.6
+  zoom: 10.1
 };
 
 export const COPENHAGEN_BOUNDS = {
-  west: 12.45,
-  south: 55.61,
-  east: 12.71,
-  north: 55.73
+  west: 12.3,
+  south: 55.5,
+  east: 12.82,
+  north: 55.82
 } as const;
 
 export const COPENHAGEN_MAX_BOUNDS: [[number, number], [number, number]] = [

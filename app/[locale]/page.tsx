@@ -41,7 +41,7 @@ export default async function LocaleHomePage({
             </Link>
           </Button>
           <Button asChild size="lg" variant="soft">
-            <Link href={`/${locale}/sign-in`}>
+            <Link href={`/${locale}/dashboard?series=new`}>
               {locale === "da" ? "Tilføj et marked" : "Add a market"}
             </Link>
           </Button>
@@ -110,7 +110,7 @@ export default async function LocaleHomePage({
           </p>
           <div className="pt-2">
             <Button asChild variant="outline">
-              <Link href={`/${locale}/sign-in`}>
+              <Link href={`/${locale}/dashboard?series=new`}>
                 {locale === "da" ? "Opret opslag" : "Create listing"}
               </Link>
             </Button>

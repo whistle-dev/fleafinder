@@ -30,8 +30,13 @@ export function MarketCard({ locale, market, featured = false }: { locale: Local
           {nextOccurrence && (
             <div className="flex flex-col gap-1 text-sm">
               <div className="flex items-center gap-2 text-[var(--ink)]">
-                <CalendarDays className="size-4 text-[var(--ink-muted)]" />
-                <span className="font-medium">{formatDate(nextOccurrence.startAt, locale)}</span>
+                <CalendarDays className="size-4 text-[var(--ink-muted)] shrink-0" />
+                <span className="font-medium truncate">{formatDate(nextOccurrence.startAt, locale)}</span>
+                {market.occurrences.length > 1 && (
+                  <span className="inline-flex items-center text-[0.65rem] font-bold uppercase tracking-wider text-[var(--accent-dark)] bg-[var(--accent-soft)] px-1.5 py-0.5 rounded-md shrink-0">
+                    +{market.occurrences.length - 1} {locale === "da" ? "mere" : "more"}
+                  </span>
+                )}
               </div>
               <div className="pl-6 text-[var(--ink-soft)]">
                 {formatTimeRange(nextOccurrence.startAt, nextOccurrence.endAt, locale)}

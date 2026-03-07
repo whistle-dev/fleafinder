@@ -56,10 +56,10 @@ function ViewButton({
   return (
     <button
       className={cn(
-        "relative flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full transition-colors z-10 cursor-pointer",
+        "relative flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 h-10 text-sm font-medium rounded-[10px] transition-colors duration-200 cursor-pointer z-10",
         active 
-          ? "text-[var(--surface)]" 
-          : "text-[var(--ink-soft)] hover:text-[var(--ink)]"
+          ? "text-[var(--paper)]" 
+          : "text-[var(--ink-soft)] hover:bg-[var(--paper-warm)] hover:text-[var(--ink)]"
       )}
       onClick={onClick}
       type="button"
@@ -67,12 +67,12 @@ function ViewButton({
       {active && (
         <motion.div
           layoutId="view-toggle"
-          className="absolute inset-0 bg-[var(--ink)] rounded-full -z-10"
+          className="absolute inset-0 bg-[var(--ink)] rounded-[10px] shadow-md -z-10"
           transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
         />
       )}
-      <Icon className="size-4" />
-      <span>{label}</span>
+      <Icon className="size-4 relative z-10" />
+      <span className="hidden md:inline lg:hidden xl:inline relative z-10">{label}</span>
     </button>
   );
 }
@@ -127,23 +127,24 @@ export function ExplorerClient({ locale, dictionary, initialSnapshot }: Explorer
   }, [deferredQuery, filters.category, filters.date, filters.view, locale, pathname, router]);
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6 md:space-y-10">
       {/* Elegant Header */}
-      <div className="space-y-4 max-w-3xl">
-        <h1 className="font-display text-[clamp(2.5rem,5vw,3.5rem)] leading-none tracking-[-0.02em] text-[var(--ink)]">
+      <div className="space-y-2 md:space-y-4 max-w-3xl">
+        <h1 className="font-display text-[clamp(2.25rem,6vw,3.5rem)] leading-[1.05] tracking-[-0.02em] text-[var(--ink)]">
           {dictionary.title}
         </h1>
-        <p className="text-lg leading-relaxed text-[var(--ink-soft)]">{dictionary.intro}</p>
+        <p className="text-base md:text-lg leading-relaxed text-[var(--ink-soft)]">{dictionary.intro}</p>
       </div>
       
-      {/* Minimalist Filters */}
-      <div className="rounded-[var(--radius-xl)] bg-[var(--surface)] border border-[var(--line)] p-2 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center gap-2">
+      {/* Search, Filters, and View */}
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 relative z-10">
+        {/* Search & Filters Container */}
+        <div className="flex-1 rounded-[14px] bg-[var(--surface)] border border-[var(--line)] p-1.5 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
           {/* Search */}
-          <div className="relative flex-1">
+          <div className="relative flex-1 pl-1">
             <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-[var(--ink-muted)]" />
             <Input
-              className="h-11 pl-10 border-0 shadow-none bg-transparent focus-visible:ring-0 placeholder:text-[var(--ink-muted)] text-[var(--ink)] font-medium"
+              className="h-10 pl-10 border-0 shadow-none bg-transparent focus-visible:ring-0 placeholder:text-[var(--ink-muted)] text-[var(--ink)] font-medium"
               onChange={(event) => setFilters((current) => ({ ...current, q: event.target.value }))}
               placeholder={dictionary.searchPlaceholder}
               type="search"
@@ -151,10 +152,10 @@ export function ExplorerClient({ locale, dictionary, initialSnapshot }: Explorer
             />
           </div>
 
-          <div className="hidden md:block w-px h-6 bg-[var(--line)]" />
+          <div className="hidden sm:block w-px h-5 bg-[var(--line)]" />
 
           {/* Selects */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 pt-1 sm:pt-0 border-t border-[var(--line-subtle)] sm:border-t-0">
             <Select
               onValueChange={(value) =>
                 setFilters((current) => ({
@@ -164,7 +165,7 @@ export function ExplorerClient({ locale, dictionary, initialSnapshot }: Explorer
               }
               value={filters.category}
             >
-              <SelectTrigger className="h-11 w-auto min-w-[140px] border-0 shadow-none bg-transparent hover:bg-[var(--paper-warm)] rounded-lg font-medium">
+              <SelectTrigger className="h-10 w-full sm:w-auto min-w-[140px] border-0 shadow-none bg-transparent hover:bg-[var(--paper-warm)] rounded-[10px] font-medium flex-1">
                 <SelectValue placeholder={dictionary.category} />
               </SelectTrigger>
               <SelectContent>
@@ -186,7 +187,7 @@ export function ExplorerClient({ locale, dictionary, initialSnapshot }: Explorer
               }
               value={filters.date}
             >
-              <SelectTrigger className="h-11 w-auto min-w-[130px] border-0 shadow-none bg-transparent hover:bg-[var(--paper-warm)] rounded-lg font-medium">
+              <SelectTrigger className="h-10 w-full sm:w-auto min-w-[130px] border-0 shadow-none bg-transparent hover:bg-[var(--paper-warm)] rounded-[10px] font-medium flex-1">
                 <SelectValue placeholder={dictionary.when} />
               </SelectTrigger>
               <SelectContent>
@@ -197,23 +198,12 @@ export function ExplorerClient({ locale, dictionary, initialSnapshot }: Explorer
             </Select>
           </div>
         </div>
-      </div>
 
-      {/* View Toggle & Status */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--line)] pb-4">
-        <div className="flex items-center gap-1 bg-[var(--paper-cream)] p-1 rounded-full border border-[var(--line-subtle)]">
+        {/* View Toggle */}
+        <div className="flex items-center justify-between sm:justify-start gap-1 bg-[var(--surface)] p-1.5 rounded-[14px] border border-[var(--line)] shadow-sm shrink-0">
           <ViewButton id="list" active={filters.view === "list"} icon={List} label={dictionary.list} onClick={() => setFilters((current) => ({ ...current, view: "list" }))} />
           <ViewButton id="map" active={filters.view === "map"} icon={MapPinned} label={dictionary.map} onClick={() => setFilters((current) => ({ ...current, view: "map" }))} />
           <ViewButton id="calendar" active={filters.view === "calendar"} icon={CalendarDays} label={dictionary.calendar} onClick={() => setFilters((current) => ({ ...current, view: "calendar" }))} />
-        </div>
-
-        <div className="flex items-center gap-2 text-sm font-medium text-[var(--ink-soft)]">
-          {isLoading ? (
-            <span className="inline-flex h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--accent)]"></span>
-          ) : (
-            <span className="inline-flex h-1.5 w-1.5 rounded-full bg-[var(--line-strong)]"></span>
-          )}
-          <span>{snapshot.markets.length} {locale === "da" ? "fundet" : "found"}</span>
         </div>
       </div>
 
@@ -253,15 +243,16 @@ export function ExplorerClient({ locale, dictionary, initialSnapshot }: Explorer
           )
         ) : null}
 
-        {filters.view === "map" ? (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="h-[600px] rounded-[var(--radius-xl)] overflow-hidden border border-[var(--line)] shadow-sm"
-          >
-            <MarketMap locale={locale} markets={snapshot.markets} />
-          </motion.div>
-        ) : null}
+        <motion.div
+          animate={{ opacity: filters.view === "map" ? 1 : 0 }}
+          className={cn(
+            "h-[70vh] min-h-[500px] w-full rounded-[24px] overflow-hidden shadow-sm",
+            filters.view === "map" ? "block" : "hidden"
+          )}
+          initial={false}
+        >
+          <MarketMap isActive={filters.view === "map"} locale={locale} markets={snapshot.markets} />
+        </motion.div>
         {filters.view === "calendar" ? (
           <motion.div 
             initial={{ opacity: 0 }}
