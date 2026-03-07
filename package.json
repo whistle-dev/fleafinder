@@ -1,0 +1,43 @@
+{
+  "name": "fleafinder",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build --webpack",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "supabase:login": "supabase login",
+    "supabase:link": "supabase link --project-ref \"$SUPABASE_PROJECT_REF\"",
+    "supabase:migration:new": "supabase migration new",
+    "supabase:db:push": "supabase db push",
+    "supabase:db:push:dry": "supabase db push --dry-run",
+    "supabase:db:pull": "supabase db pull",
+    "supabase:db:reset": "supabase db reset",
+    "supabase:types": "supabase gen types typescript --linked --schema public > lib/database.types.ts"
+  },
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.2.3",
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.49.8",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.35.0",
+    "lucide-react": "^0.511.0",
+    "mapbox-gl": "^3.11.1",
+    "next": "^16.1.6",
+    "radix-ui": "^1.4.3",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "tailwind-merge": "^3.3.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.8",
+    "@types/node": "^22.13.8",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "supabase": "^2.53.3",
+    "tailwindcss": "^4.1.8",
+    "typescript": "^5.8.2"
+  }
+}

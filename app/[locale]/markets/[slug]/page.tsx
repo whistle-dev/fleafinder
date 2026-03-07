@@ -1,0 +1,234 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowLeft, CalendarDays, Clock3, Mail, MapPin } from "lucide-react";
+import { notFound } from "next/navigation";
+
+import { CATEGORY_LABELS } from "@/lib/constants";
+import { getMarketBySlug } from "@/lib/data";
+import { getDictionary } from "@/lib/i18n";
+import type { Locale } from "@/lib/types";
+import { createIcsFile, formatDate, formatTimeRange, getNextOccurrence, isLocale } from "@/lib/utils";
+
+import { MarketMap } from "@/components/market-map";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{ locale: string; slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const market = await getMarketBySlug(slug);
+
+  if (!market) {
+    return {};
+  }
+
+  return {
+    title: market.title,
+    description: market.description
+  };
+}
+
+export default async function MarketDetailPage({
+  params
+}: {
+  params: Promise<{ locale: string; slug: string }>;
+}) {
+  const { locale: localeParam, slug } = await params;
+  const locale = (isLocale(localeParam) ? localeParam : "da") as Locale;
+  const dictionary = getDictionary(locale);
+  const market = await getMarketBySlug(slug);
+
+  if (!market) {
+    notFound();
+  }
+
+  const nextOccurrence = getNextOccurrence(market.occurrences);
+  const locationLabel = [market.venueName, market.addressLine, market.city].filter(Boolean).join(", ");
+  const googleCalendarUrl = nextOccurrence
+    ? `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
+        market.title
+      )}&details=${encodeURIComponent(market.description)}&location=${encodeURIComponent(
+        locationLabel
+      )}&dates=${new Date(nextOccurrence.startAt).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z")}/${new Date(
+        nextOccurrence.endAt
+      )
+        .toISOString()
+        .replace(/[-:]/g, "")
+        .replace(/\.\d{3}Z$/, "Z")}`
+    : "";
+
+  const calendarData = nextOccurrence
+    ? `data:text/calendar;charset=utf-8,${encodeURIComponent(createIcsFile(market, nextOccurrence))}`
+    : "";
+
+  return (
+    <article className="max-w-5xl mx-auto space-y-12">
+      {/* Navigation */}
+      <Link href={`/${locale}/markets`} className="inline-flex items-center gap-2 text-sm font-medium text-[var(--ink-soft)] hover:text-[var(--ink)] transition-colors">
+        <ArrowLeft className="size-4" />
+        {dictionary.detail.back}
+      </Link>
+
+      {/* Hero Header */}
+      <header className="space-y-6 max-w-3xl">
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="solid">{CATEGORY_LABELS[market.category][locale]}</Badge>
+          <Badge variant="subtle">{market.city}</Badge>
+        </div>
+        
+        <h1 className="font-display text-[clamp(2.5rem,6vw,4rem)] leading-[1.05] tracking-[-0.02em] text-[var(--ink)]">
+          {market.title}
+        </h1>
+        <p className="text-xl leading-relaxed text-[var(--ink-soft)]">
+          {market.description}
+        </p>
+      </header>
+
+      {/* Main Content Grid */}
+      <section className="grid gap-12 lg:grid-cols-[1fr_340px]">
+        {/* Left Column - Details */}
+        <div className="space-y-12">
+          {/* Quick Facts */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 py-8 border-y border-[var(--line)]">
+            <div className="space-y-1">
+              <div className="text-xs font-medium uppercase tracking-widest text-[var(--ink-muted)]">
+                {dictionary.detail.vibe}
+              </div>
+              <div className="font-display text-lg text-[var(--ink)]">{market.vibe}</div>
+            </div>
+            <div className="space-y-1">
+              <div className="text-xs font-medium uppercase tracking-widest text-[var(--ink-muted)]">
+                {dictionary.detail.address}
+              </div>
+              <div className="text-lg text-[var(--ink)]">{market.addressLine}</div>
+            </div>
+            <div className="space-y-1 col-span-2 md:col-span-1">
+              <div className="text-xs font-medium uppercase tracking-widest text-[var(--ink-muted)]">
+                {locale === "da" ? "Datoer" : "Dates"}
+              </div>
+              <div className="text-lg text-[var(--ink)]">
+                {locale === "da"
+                  ? `${market.occurrences.length} planlagte`
+                  : `${market.occurrences.length} scheduled`}
+              </div>
+            </div>
+          </div>
+
+          {/* Schedule */}
+          <div className="space-y-6">
+            <h2 className="font-display text-2xl text-[var(--ink)]">{dictionary.detail.nextDates}</h2>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {market.occurrences.slice(0, 6).map((occurrence) => (
+                <div 
+                  className="group flex flex-col justify-center rounded-xl bg-[var(--surface)] border border-[var(--line)] p-5 hover:border-[var(--ink-muted)] transition-colors" 
+                  key={occurrence.id}
+                >
+                  <div className="font-display text-xl text-[var(--ink)] mb-1">
+                    {formatDate(occurrence.startAt, locale)}
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-[var(--ink-soft)]">
+                    <Clock3 className="size-3.5" />
+                    <span>{formatTimeRange(occurrence.startAt, occurrence.endAt, locale)}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Map Section */}
+          <div className="space-y-6">
+            <h2 className="font-display text-2xl text-[var(--ink)]">
+              {locale === "da" ? "Find vej" : "Location"}
+            </h2>
+            <div className="h-[400px] overflow-hidden rounded-2xl border border-[var(--line)]">
+              <MarketMap locale={locale} markets={[market]} />
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column - Sticky Sidebar */}
+        <div>
+          <div className="sticky top-8 space-y-6 bg-[var(--surface)] border border-[var(--line)] rounded-2xl p-6 shadow-sm">
+            <h3 className="font-display text-xl text-[var(--ink)]">
+              {locale === "da" ? "Praktisk info" : "Practical info"}
+            </h3>
+            
+            <div className="space-y-6">
+              {/* Next Occurrence Focus */}
+              {nextOccurrence ? (
+                <div className="space-y-2">
+                  <div className="text-xs font-medium uppercase tracking-widest text-[var(--ink-muted)]">
+                    {locale === "da" ? "Næste gang" : "Next up"}
+                  </div>
+                  <div className="flex items-center gap-3 text-[var(--ink)]">
+                    <CalendarDays className="size-5 text-[var(--ink-soft)]" />
+                    <span className="font-medium">{formatDate(nextOccurrence.startAt, locale)}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-[var(--ink-soft)] pl-8">
+                    <span>{formatTimeRange(nextOccurrence.startAt, nextOccurrence.endAt, locale)}</span>
+                  </div>
+                </div>
+              ) : null}
+
+              {/* Location Focus */}
+              <div className="space-y-2">
+                <div className="text-xs font-medium uppercase tracking-widest text-[var(--ink-muted)]">
+                  {locale === "da" ? "Sted" : "Venue"}
+                </div>
+                <div className="flex items-start gap-3 text-[var(--ink)]">
+                  <MapPin className="mt-0.5 size-5 shrink-0 text-[var(--ink-soft)]" />
+                  <div>
+                    <div className="font-medium">{market.venueName || market.addressLine}</div>
+                    {market.venueName && <div className="text-sm text-[var(--ink-soft)]">{market.addressLine}</div>}
+                    <div className="text-sm text-[var(--ink-soft)]">{market.city}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Contact Focus */}
+              <div className="space-y-2">
+                <div className="text-xs font-medium uppercase tracking-widest text-[var(--ink-muted)]">
+                  {locale === "da" ? "Kontakt" : "Contact"}
+                </div>
+                <div className="flex items-center gap-3 text-[var(--ink)]">
+                  <Mail className="size-5 shrink-0 text-[var(--ink-soft)]" />
+                  <a href={`mailto:${market.contactEmail}`} className="text-sm hover:underline">{market.contactEmail}</a>
+                </div>
+              </div>
+
+              <hr className="border-[var(--line-subtle)]" />
+
+              {/* Actions */}
+              <div className="space-y-3 pt-2">
+                {nextOccurrence && (
+                  <>
+                    <Button asChild className="w-full">
+                      <a download={`${market.slug}.ics`} href={calendarData}>
+                        <CalendarDays className="size-4" />
+                        {dictionary.detail.addToCalendar}
+                      </a>
+                    </Button>
+                    <Button asChild className="w-full" variant="outline">
+                      <a href={googleCalendarUrl} rel="noreferrer" target="_blank">
+                        {dictionary.detail.googleCalendar}
+                      </a>
+                    </Button>
+                  </>
+                )}
+                <Button asChild className="w-full" variant="soft">
+                  <a href={`https://maps.google.com/?q=${encodeURIComponent(locationLabel)}`} rel="noreferrer" target="_blank">
+                    <MapPin className="size-4" />
+                    {dictionary.common.openMap}
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </article>
+  );
+}
