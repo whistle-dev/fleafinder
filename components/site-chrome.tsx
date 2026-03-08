@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { signOutAction } from "@/lib/actions";
 import type { Locale, Profile } from "@/lib/types";
@@ -77,7 +78,11 @@ export function SiteChrome({
               )}
               
               <div className="pl-2 ml-2 border-l border-[var(--line)]">
-                <LocaleSwitcher locale={locale} />
+                <Suspense
+                  fallback={<div aria-hidden="true" className="h-8 w-[78px] rounded-full border border-[var(--line)] bg-[var(--surface)]" />}
+                >
+                  <LocaleSwitcher locale={locale} />
+                </Suspense>
               </div>
             </nav>
           </div>
