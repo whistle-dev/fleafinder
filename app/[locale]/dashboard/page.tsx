@@ -127,7 +127,7 @@ export default async function DashboardPage({
           </div>
           
           <div className="flex items-center gap-4">
-            <div className="flex items-center justify-center size-12 rounded-full bg-[#e8f3e8] text-[var(--accent)]">
+            <div className="flex items-center justify-center size-12 rounded-full bg-[#e8f3e8] text-[var(--ink-soft)]">
               <CheckCircle2 className="size-5" />
             </div>
             <div>
@@ -190,7 +190,7 @@ export default async function DashboardPage({
                     <TableRow key={market.id} className="group cursor-pointer">
                       <TableCell>
                         <Link href={`/${locale}/dashboard?series=${market.slug}`} className="block">
-                          <div className="font-medium text-[var(--ink)] group-hover:text-[var(--accent)] transition-colors">
+                          <div className="font-medium text-[var(--ink)] group-hover:text-[var(--ink-soft)] transition-colors">
                             {market.title || dictionary.dashboard.newMarket}
                           </div>
                           <div className="text-xs text-[var(--ink-muted)] line-clamp-1">{market.city}</div>
@@ -240,7 +240,7 @@ export default async function DashboardPage({
               workspace.revisions.map((revision) => (
                 <div className="relative pl-8" key={revision.id}>
                   {/* Timeline Dot */}
-                  <div className="absolute left-[-2px] top-1.5 w-7 h-7 rounded-full border-[6px] border-[var(--paper)] bg-[var(--accent)]" />
+                  <div className="absolute left-[-2px] top-1.5 w-7 h-7 rounded-full border-[6px] border-[var(--paper)] bg-[var(--ink)]" />
                   
                   {/* Revision Card */}
                   <div className="rounded-xl border border-[var(--line)] bg-[var(--surface)] p-4 hover:border-[var(--ink-muted)] transition-colors">

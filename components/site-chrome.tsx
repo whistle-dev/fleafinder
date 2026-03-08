@@ -38,7 +38,7 @@ export function SiteChrome({
             <div className="min-w-0">
               <Link href={`/${locale}`} className="group inline-block">
                 <div className="flex items-center gap-2">
-                  <span className="font-display text-[1.75rem] leading-none tracking-[-0.02em] text-[var(--ink)] group-hover:text-[var(--accent)] transition-colors">
+                  <span className="font-display text-[1.75rem] leading-none tracking-[-0.02em] text-[var(--ink)] group-hover:text-[var(--ink-soft)] transition-colors">
                     Flea Finder
                   </span>
                   <span className="text-[var(--ink-light)] font-light text-xl">|</span>

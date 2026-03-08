@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { ArrowLeft, CalendarDays, Clock3, Mail, MapPin } from "lucide-react";
 import { notFound } from "next/navigation";
 
@@ -6,7 +7,7 @@ import { CATEGORY_LABELS } from "@/lib/constants";
 import { getMarketBySlug } from "@/lib/data";
 import { getDictionary } from "@/lib/i18n";
 import type { Locale } from "@/lib/types";
-import { createIcsFile, formatDate, formatTimeRange, getNextOccurrence, isLocale } from "@/lib/utils";
+import { createIcsFile, formatDate, formatTimeRange, getCoverTintGradient, getNextOccurrence, isLocale } from "@/lib/utils";
 
 import { BackLink } from "@/components/back-link";
 import { MarketMap } from "@/components/market-map";
@@ -76,18 +77,36 @@ export default async function MarketDetailPage({
       </BackLink>
 
       {/* Hero Header */}
-      <header className="space-y-6 max-w-3xl">
-        <div className="flex flex-wrap gap-2">
-          <Badge variant="solid">{CATEGORY_LABELS[market.category][locale]}</Badge>
-          <Badge variant="subtle">{market.city}</Badge>
+      <header className="space-y-8">
+        <div 
+          className="relative w-full h-[40vh] min-h-[300px] max-h-[500px] rounded-[32px] overflow-hidden shadow-sm border border-[var(--line-subtle)]"
+          style={!market.coverImageUrl ? { background: getCoverTintGradient(market.coverTint) } : undefined}
+        >
+          {market.coverImageUrl && (
+            <Image
+              src={market.coverImageUrl}
+              alt={market.title}
+              fill
+              unoptimized
+              priority
+              className="object-cover"
+            />
+          )}
         </div>
-        
-        <h1 className="font-display text-[clamp(2.5rem,6vw,4rem)] leading-[1.05] tracking-[-0.02em] text-[var(--ink)]">
-          {market.title}
-        </h1>
-        <p className="text-xl leading-relaxed text-[var(--ink-soft)]">
-          {market.description}
-        </p>
+
+        <div className="space-y-6 max-w-3xl">
+          <div className="flex flex-wrap gap-2">
+            <Badge variant="solid">{CATEGORY_LABELS[market.category][locale]}</Badge>
+            <Badge variant="subtle">{market.city}</Badge>
+          </div>
+          
+          <h1 className="font-display text-[clamp(2.5rem,6vw,4rem)] leading-[1.05] tracking-[-0.02em] text-[var(--ink)]">
+            {market.title}
+          </h1>
+          <p className="text-xl leading-relaxed text-[var(--ink-soft)]">
+            {market.description}
+          </p>
+        </div>
       </header>
 
       {/* Main Content Grid */}

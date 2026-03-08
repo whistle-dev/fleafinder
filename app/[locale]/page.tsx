@@ -15,9 +15,7 @@ export default async function LocaleHomePage({
   const { locale: localeParam } = await params;
   const locale = (isLocale(localeParam) ? localeParam : "da") as Locale;
   const snapshot = await getExplorerSnapshot();
-  const liveMarkets = snapshot.markets.slice(0, 8);
-  const featuredMarkets = liveMarkets.filter(m => m.featured);
-  const otherMarkets = liveMarkets.filter(m => !m.featured).slice(0, 6);
+  const liveMarkets = snapshot.markets.slice(0, 9);
 
   return (
     <div className="space-y-24 pt-8 md:pt-16">
@@ -48,45 +46,26 @@ export default async function LocaleHomePage({
         </div>
       </section>
 
-      {/* Featured Markets */}
-      {featuredMarkets.length > 0 && (
-        <section className="space-y-8">
-          <div className="flex items-center justify-between border-b border-[var(--line)] pb-4">
-            <h2 className="font-display text-2xl text-[var(--ink)]">
-              {locale === "da" ? "Udvalgte" : "Featured"}
-            </h2>
-          </div>
-          
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {featuredMarkets.map((market, i) => (
-              <div key={market.id} className="animate-fade-in" style={{ animationDelay: `${i * 0.05}s` }}>
-                <MarketCard locale={locale} market={market} featured />
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* All Markets */}
+      {/* Mixed Markets Grid */}
       <section className="space-y-8">
         <div className="flex items-end justify-between border-b border-[var(--line)] pb-4">
           <h2 className="font-display text-2xl text-[var(--ink)]">
-            {locale === "da" ? "Kommende" : "Upcoming"}
+            {locale === "da" ? "Kommende markeder" : "Upcoming markets"}
           </h2>
           <Link href={`/${locale}/markets`} className="text-sm font-medium text-[var(--ink-soft)] hover:text-[var(--ink)] transition-colors">
             {locale === "da" ? "Se alle →" : "View all →"}
           </Link>
         </div>
         
-        {otherMarkets.length > 0 ? (
+        {liveMarkets.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {otherMarkets.map((market, i) => (
+            {liveMarkets.map((market, i) => (
               <div key={market.id} className="animate-fade-in" style={{ animationDelay: `${i * 0.05}s` }}>
-                <MarketCard locale={locale} market={market} />
+                <MarketCard locale={locale} market={market} featured={market.featured} />
               </div>
             ))}
           </div>
-        ) : liveMarkets.length === 0 ? (
+        ) : (
           <div className="py-20 text-center border border-[var(--line-subtle)] rounded-2xl bg-[var(--surface)]">
             <p className="text-[var(--ink-soft)]">
               {locale === "da"
@@ -94,7 +73,7 @@ export default async function LocaleHomePage({
                 : "There are no published markets yet."}
             </p>
           </div>
-        ) : null}
+        )}
       </section>
 
       {/* Minimal Footer CTA */}

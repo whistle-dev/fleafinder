@@ -312,12 +312,13 @@ img {
 }
 
 .mapboxgl-popup {
-  max-width: 18rem !important;
+  max-width: 260px !important;
+  z-index: 50;
 }
 
 .mapboxgl-popup-content {
-  border: 1px solid var(--line) !important;
-  border-radius: var(--radius-lg) !important;
+  border: 1px solid var(--line-subtle) !important;
+  border-radius: 16px !important;
   padding: 0 !important;
   overflow: hidden;
   color: var(--ink);
@@ -338,41 +339,34 @@ img {
   padding: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  background:
-    linear-gradient(180deg, rgba(250, 248, 245, 0.9), rgba(255, 255, 255, 1)),
-    var(--surface);
 }
 
-.map-popup strong {
-  font-family: var(--font-fraunces), Georgia, serif;
-  font-size: 1.15rem;
-  font-weight: 400;
-  letter-spacing: -0.025em;
-}
-
-.map-popup span {
-  font-size: 0.85rem;
-  color: var(--ink-soft);
+.map-popup__link-wrapper {
+  padding: 0.5rem;
+  background: var(--paper-warm);
+  border-top: 1px solid var(--line-subtle);
 }
 
 .map-popup__link {
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin-top: 0.45rem;
-  padding: 0.8rem;
-  border-top: 1px solid var(--line);
-  background: color-mix(in srgb, var(--paper) 72%, white);
-  font-size: 0.85rem;
-  font-weight: 500;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-radius: 8px;
+  background: transparent;
   color: var(--ink);
-  transition: background 0.2s ease, color 0.2s ease;
+  font-weight: 500;
+  font-size: 0.75rem;
+  transition: background-color 0.2s ease;
 }
 
 .map-popup__link:hover {
-  background: var(--accent-soft);
-  color: var(--accent-dark);
+  background: rgba(45, 40, 35, 0.06);
+}
+
+.map-popup__link:hover svg {
+  transform: translateX(2px);
+  transition: transform 0.2s ease;
 }
 
 .dark {

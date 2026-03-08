@@ -115,7 +115,13 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
     map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "top-right");
     map.touchZoomRotate.disableRotation();
 
-    const popup = new mapboxgl.Popup({ closeButton: false, offset: 18 });
+    const popup = new mapboxgl.Popup({ 
+      closeButton: false, 
+      offset: 18, 
+      maxWidth: "260px", 
+      focusAfterOpen: false,
+      anchor: "bottom" 
+    });
     popupRef.current = popup;
 
     const renderPopup = (market: MarketSeries, coordinates: [number, number]) => {
@@ -126,17 +132,43 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
       root.className = "map-popup__inner";
       popupNode.appendChild(root);
 
+      const addressLabel = market.venueName ? `${market.venueName}, ${market.addressLine}` : market.addressLine;
+
       root.innerHTML = `
-        <strong>${market.title}</strong>
-        <span>${market.addressLine}</span>
-        <span>${market.vibe}</span>
+        <div style="margin-bottom: 0.5rem;">
+          <span style="display: inline-block; padding: 0.125rem 0.375rem; background: var(--paper-warm); color: var(--ink-soft); font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: bold; border-radius: 4px;">
+            ${localeRef.current === "da" ? "Marked" : "Market"}
+          </span>
+        </div>
+        <strong style="font-family: var(--font-fraunces), serif; font-size: 1.125rem; line-height: 1.1; color: var(--ink); display: block; margin-bottom: 0.25rem;">
+          ${market.title}
+        </strong>
+        <div style="display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.75rem; color: var(--ink-soft); margin-top: 0.25rem;">
+          <div style="display: flex; align-items: center; gap: 0.35rem;">
+            <svg style="width: 14px; height: 14px; opacity: 0.7; flex-shrink: 0;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${addressLabel}</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.35rem;">
+             <svg style="width: 14px; height: 14px; opacity: 0.7; flex-shrink: 0;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+             <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${market.vibe}</span>
+          </div>
+        </div>
       `;
 
+      const linkWrapper = document.createElement("div");
+      linkWrapper.className = "map-popup__link-wrapper";
+      
       const anchor = document.createElement("a");
       anchor.href = `/${localeRef.current}/markets/${market.slug}`;
       anchor.className = "map-popup__link";
-      anchor.innerText = localeRef.current === "da" ? "Se detaljer" : "View details";
-      root.appendChild(anchor);
+      anchor.innerHTML = `
+        <span>
+           ${localeRef.current === "da" ? "Læs mere" : "View details"}
+        </span>
+        <svg style="width: 14px; height: 14px; transition: transform 0.2s ease;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      `;
+      linkWrapper.appendChild(anchor);
+      popupNode.appendChild(linkWrapper);
 
       popup.setLngLat(coordinates).setDOMContent(popupNode).addTo(map);
     };
@@ -245,16 +277,19 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
       }
 
       const coordinates = [...feature.geometry.coordinates] as [number, number];
-      const targetZoom = Math.min(Math.max(map.getZoom() + 0.8, 13.2), 14.4);
-
+      
       popup.remove();
       renderPopup(market, coordinates);
-      map.easeTo({
-        center: coordinates,
-        zoom: targetZoom,
-        duration: 550,
-        essential: true
-      });
+      
+      if (visibleMarketsRef.current.length > 1) {
+        const targetZoom = Math.min(Math.max(map.getZoom() + 0.8, 13.2), 14.4);
+        map.easeTo({
+          center: coordinates,
+          zoom: targetZoom,
+          duration: 550,
+          essential: true
+        });
+      }
     };
 
     const handlePointerEnter = () => {

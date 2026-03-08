@@ -101,15 +101,15 @@ function MarketPopover({
       <PopoverTrigger asChild>
         <button
           className={cn(
-            "w-full text-left transition-[background-color,border-color,box-shadow,color] duration-200 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] block group",
+            "w-full text-left transition-[background-color,border-color,box-shadow,color] duration-200 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[var(--ink)] block group",
             compact
               ? "py-1 px-2 hover:bg-[var(--paper-warm)]"
-              : "p-2 bg-[var(--surface)] border border-[var(--line-subtle)] hover:border-[var(--accent-soft)] hover:shadow-[0_2px_8px_rgba(74,89,76,0.06)]"
+              : "p-2 bg-[var(--surface)] border border-[var(--line-subtle)] hover:border-[var(--line-strong)] hover:shadow-sm"
           )}
           type="button"
         >
           <div className="flex-1 min-w-0">
-            <div className="truncate text-xs font-medium text-[var(--ink)] group-hover:text-[var(--accent)] transition-colors">
+            <div className="truncate text-xs font-medium text-[var(--ink)] group-hover:text-[var(--ink-soft)] transition-colors">
               {entry.title}
             </div>
             {!compact && (
@@ -124,38 +124,36 @@ function MarketPopover({
       <PopoverContent 
         align="start" 
         sideOffset={6}
-        className="w-72 p-0 overflow-hidden shadow-[0_12px_32px_rgba(31,29,26,0.08)] rounded-xl border border-[var(--line)] bg-[var(--surface)]"
+        className="w-[260px] p-0 overflow-hidden shadow-[var(--shadow-lg)] rounded-[16px] border border-[var(--line-subtle)] bg-[var(--surface)]"
       >
         <div className="p-4 space-y-3">
-          <Badge variant="subtle" className="w-fit text-[0.65rem] font-medium px-2 py-0.5 h-auto">
+          <Badge variant="subtle" className="w-fit text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 bg-[var(--paper-warm)] text-[var(--ink-soft)] border-none">
             {locale === "da" ? "Marked" : "Market"}
           </Badge>
-          <h4 className="font-display text-xl leading-tight text-[var(--ink)] tracking-tight">
+          
+          <h4 className="font-display text-lg leading-tight text-[var(--ink)]">
             {entry.title}
           </h4>
 
-          <div className="space-y-2 text-sm text-[var(--ink-soft)] pt-1">
-            <div className="flex items-center gap-2.5">
-              <Clock3 className="size-4 shrink-0 text-[var(--ink-muted)]" />
-              <span>
-                <span className="font-medium text-[var(--ink)]">{formatDate(entry.startAt, locale)}</span>
-                {" · "}
+          <div className="space-y-1.5 pt-1">
+            <div className="flex items-center gap-2 text-xs text-[var(--ink-soft)]">
+              <Clock3 className="size-3.5 shrink-0 opacity-70" />
+              <span className="font-medium">
                 {formatTimeRange(entry.startAt, entry.endAt, locale)}
               </span>
             </div>
-            <div className="flex items-center gap-2.5">
-              <MapPin className="size-4 shrink-0 text-[var(--ink-muted)]" />
-              <span className="font-medium text-[var(--ink)]">{entry.city}</span>
+            <div className="flex items-center gap-2 text-xs text-[var(--ink-soft)]">
+              <MapPin className="size-3.5 shrink-0 opacity-70" />
+              <span className="font-medium truncate">{entry.city}</span>
             </div>
           </div>
         </div>
-        <div className="p-2 bg-[var(--paper-warm)] border-t border-[var(--line-subtle)]">
-          <Button asChild variant="ghost" className="w-full justify-between hover:bg-[var(--surface)] bg-transparent h-9 text-sm">
-            <Link href={`/${locale}/markets/${entry.slug}`}>
-              {locale === "da" ? "Se detaljer" : "View details"}
-              <ArrowRight className="size-4" />
-            </Link>
-          </Button>
+        
+        <div className="p-2 border-t border-[var(--line-subtle)] bg-[var(--paper-warm)]">
+          <Link href={`/${locale}/markets/${entry.slug}`} className="group/link flex w-full items-center justify-between rounded-lg p-2 text-xs font-medium text-[var(--ink)] transition-colors hover:bg-[rgba(45,40,35,0.06)]">
+            {locale === "da" ? "Læs mere" : "View details"}
+            <ArrowRight className="size-3.5 transform transition-transform group-hover/link:translate-x-0.5" />
+          </Link>
         </div>
       </PopoverContent>
     </Popover>
@@ -177,7 +175,7 @@ function DayOverflowPopover({
     <Popover>
       <PopoverTrigger asChild>
         <button
-          className="w-full py-0.5 px-2 text-left rounded-md transition-colors hover:bg-[var(--paper-warm)] text-[0.65rem] font-medium text-[var(--ink-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] hover:text-[var(--ink)] flex items-center gap-1 mt-0.5"
+          className="w-full py-0.5 px-2 text-left rounded-md transition-colors hover:bg-[var(--paper-warm)] text-[0.65rem] font-medium text-[var(--ink-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ink)] hover:text-[var(--ink)] flex items-center gap-1 mt-0.5"
           type="button"
         >
           <span className="w-3 h-px bg-[var(--line-strong)]" />
@@ -187,21 +185,20 @@ function DayOverflowPopover({
       <PopoverContent 
         align="start" 
         sideOffset={6}
-        className="w-[300px] p-0 overflow-hidden shadow-[0_12px_32px_rgba(31,29,26,0.08)] rounded-xl border border-[var(--line)] bg-[var(--surface)] flex flex-col"
+        className="w-[300px] p-0 overflow-hidden shadow-[var(--shadow-xl)] rounded-3xl border border-[var(--line-subtle)] bg-[var(--surface)] flex flex-col"
       >
-        <div className="px-4 py-3 border-b border-[var(--line-subtle)] bg-[var(--paper-warm)] flex items-center justify-between shrink-0">
+        <div className="px-5 py-4 border-b border-[var(--line-subtle)] bg-[var(--paper-warm)] flex items-center justify-between shrink-0">
           <div>
-            <h4 className="font-display text-lg text-[var(--ink)] leading-none mb-1">
+            <h4 className="font-display text-xl text-[var(--ink)] leading-none mb-1.5">
               {dayLabel}
             </h4>
-            <p className="text-[0.7rem] text-[var(--ink-soft)]">
-              {entries.length} {locale === "da" ? "markeder denne dag" : "markets this day"}
+            <p className="text-[0.75rem] font-medium text-[var(--ink-soft)]">
+              {entries.length} {locale === "da" ? "markeder" : "markets"}
             </p>
           </div>
-          <Badge variant="subtle" className="text-xs">{entries.length}</Badge>
         </div>
         <ScrollArea className="h-[280px]">
-          <div className="flex flex-col gap-1.5 p-2">
+          <div className="flex flex-col gap-1.5 p-3">
             {entries.map((entry) => (
               <MarketPopover compact={false} entry={entry} key={entry.id} locale={locale} />
             ))}
@@ -216,6 +213,7 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
   const entries = buildEntries(markets);
   const firstEntryDate = entries[0]?.dayDate;
   const [visibleMonth, setVisibleMonth] = useState<Date>(getMonthStart(firstEntryDate ?? new Date()));
+  const todayKey = toDayKey(new Date());
 
   useEffect(() => {
     if (firstEntryDate) {
@@ -373,6 +371,7 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
 
               const hasEntries = cell.entries.length > 0;
               const isCurrentMonth = cell.inMonth;
+              const isToday = cell.dayKey === todayKey;
 
               if (!isCurrentMonth) {
                 return <div key={cell.dayKey} className="min-h-[110px] p-2" />;
@@ -381,10 +380,11 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
               return (
                 <div
                   className={cn(
-                    "relative min-h-[110px] p-2 flex flex-col gap-1.5 rounded-2xl transition-[background-color] duration-200",
-                    hasEntries 
-                      ? "bg-white shadow-[0_2px_8px_rgba(0,0,0,0.02)] border border-[var(--line-subtle)]" 
-                      : "border border-transparent hover:bg-white/40"
+                    "relative min-h-[110px] p-2 flex flex-col gap-1.5 rounded-2xl border transition-[background-color,border-color,box-shadow] duration-200",
+                    hasEntries
+                      ? "bg-white shadow-[0_2px_8px_rgba(0,0,0,0.02)] border-[var(--line-subtle)]"
+                      : "border-transparent hover:bg-white/40",
+                    isToday && !hasEntries && "bg-white/50"
                   )}
                   key={cell.dayKey}
                 >
@@ -392,15 +392,19 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
                   <div className="flex justify-between items-start px-1 pt-0.5 mb-1">
                     <span
                       className={cn(
-                        "font-display text-lg leading-none",
-                        hasEntries ? "text-[var(--ink)]" : "text-[var(--ink-muted)]"
+                        "font-display text-lg leading-none rounded-full px-2 py-1 transition-colors",
+                        hasEntries ? "text-[var(--ink)]" : "text-[var(--ink-muted)]",
+                        isToday && "bg-[rgba(215,198,162,0.22)] text-[var(--ink)]"
                       )}
                     >
                       {cell.dayNumber}
                     </span>
-                    {hasEntries && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] mt-1" />
-                    )}
+                    <div className="mt-1 flex items-center gap-1.5">
+                      {isToday && !hasEntries && <span className="h-1.5 w-1.5 rounded-full bg-[var(--ink-muted)]/35" />}
+                      {hasEntries && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--ink)]" />
+                      )}
+                    </div>
                   </div>
 
                   {/* Entries */}
@@ -435,6 +439,7 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
               <div className="space-y-12">
                 {mobileAgendaDays.map(([dayKey, dayEntries], index) => {
                   const dayDate = dayEntries[0].dayDate;
+                  const isToday = dayKey === todayKey;
                   const dayLabel = new Intl.DateTimeFormat(locale === "da" ? "da-DK" : "en-GB", {
                     weekday: "long",
                     day: "numeric",
@@ -451,34 +456,41 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
                       className="relative"
                     >
                       {/* Timeline Node */}
-                      <div className="absolute left-[18px] top-[10px] w-3 h-3 rounded-full bg-[var(--surface)] border-[3px] border-[var(--accent)] z-10 shadow-[0_0_0_4px_var(--paper)]" />
+                      <div
+                        className={cn(
+                          "absolute left-[18px] top-[10px] z-10 h-3 w-3 rounded-full bg-[var(--surface)] border-[3px] border-[var(--ink)] shadow-[0_0_0_4px_var(--paper)]",
+                          isToday && "border-[var(--line-strong)]"
+                        )}
+                      />
 
                       <div className="pl-10 pr-2">
-                        <h3 className="font-display text-[1.6rem] mb-4 text-[var(--ink)] capitalize tracking-[-0.02em] leading-tight">
-                          {dayLabel}
-                        </h3>
+                        <div className="mb-4">
+                          <h3 className="font-display text-[1.6rem] text-[var(--ink)] capitalize tracking-[-0.02em] leading-tight">
+                            {dayLabel}
+                          </h3>
+                        </div>
                         <div className="flex flex-col gap-3">
                           {dayEntries.map((entry) => (
                             <Link
                               href={`/${locale}/markets/${entry.slug}`}
                               key={`mobile-${entry.id}`}
-                              className="group block rounded-2xl bg-[var(--surface)] p-4 shadow-sm border border-[var(--line-subtle)] transition-[background-color,border-color,box-shadow,color,transform] duration-200 hover:border-[var(--line-strong)] hover:shadow-md hover:-translate-y-0.5"
+                              className="group block rounded-2xl bg-[var(--surface)] p-4 shadow-sm border border-[var(--line-subtle)] transition-[background-color,border-color,box-shadow,color,transform] duration-200 hover:border-[var(--line-strong)] hover:shadow-[var(--shadow-md)] hover:-translate-y-0.5"
                             >
                               <div className="flex justify-between items-start gap-4">
                                 <div className="flex-1">
-                                  <div className="font-medium text-base text-[var(--ink)]">
+                                  <div className="font-display text-xl text-[var(--ink)]">
                                     {entry.title}
                                   </div>
-                                  <div className="mt-2 flex items-center gap-2 text-sm text-[var(--ink-soft)]">
-                                    <Clock3 className="size-3.5" />
+                                  <div className="mt-2 flex items-center gap-2 text-sm text-[var(--ink-soft)] font-medium">
+                                    <Clock3 className="size-3.5 opacity-70" />
                                     {formatTimeRange(entry.startAt, entry.endAt, locale)}
                                   </div>
-                                  <div className="mt-1 flex items-center gap-2 text-sm text-[var(--ink-soft)]">
-                                    <MapPin className="size-3.5" />
+                                  <div className="mt-1 flex items-center gap-2 text-sm text-[var(--ink-soft)] font-medium">
+                                    <MapPin className="size-3.5 opacity-70" />
                                     {entry.city}
                                   </div>
                                 </div>
-                                <div className="flex size-8 items-center justify-center rounded-full bg-[var(--paper-warm)] text-[var(--ink)] transition-colors group-hover:bg-[var(--accent)] group-hover:text-[var(--paper)] shrink-0">
+                                <div className="flex size-8 items-center justify-center rounded-full bg-[var(--paper-warm)] text-[var(--ink)] transition-colors group-hover:bg-[var(--ink)] group-hover:text-[var(--paper)] shrink-0">
                                   <ArrowRight className="size-3.5" />
                                 </div>
                               </div>
