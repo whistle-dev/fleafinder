@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import { ImageResponse } from "next/og";
 
 export const size = {
@@ -6,6 +9,14 @@ export const size = {
 };
 
 export const contentType = "image/png";
+
+export const runtime = "nodejs";
+
+const fleaLogoDataUrl = (() => {
+  const logoPath = join(process.cwd(), "public", "flea-logo.png");
+  const buffer = readFileSync(logoPath);
+  return `data:image/png;base64,${buffer.toString("base64")}`;
+})();
 
 export default function AppleIcon() {
   return new ImageResponse(
@@ -17,12 +28,15 @@ export default function AppleIcon() {
         alignItems: "center",
         justifyContent: "center",
         background: "linear-gradient(155deg, #335405 0%, #466c0e 100%)",
-        color: "#feb9f2",
-        fontSize: 64,
-        fontFamily: "Georgia",
       }}
     >
-      FF
+      <img
+        src={fleaLogoDataUrl}
+        alt=""
+        width={135}
+        height={135}
+        style={{ objectFit: "contain" }}
+      />
     </div>,
     size,
   );
