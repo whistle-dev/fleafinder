@@ -37,8 +37,8 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "flex w-full items-center justify-between gap-2 rounded-[12px] border border-[var(--line)] bg-[var(--surface)] px-4 text-[15px] whitespace-nowrap text-[var(--ink)] shadow-none outline-none transition-all disabled:cursor-not-allowed disabled:opacity-50 data-[placeholder]:text-[var(--ink-muted)] hover:border-[var(--ink-muted)] data-[size=default]:h-11 data-[size=sm]:h-10 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg]:text-[var(--ink-muted)]",
-        "focus:border-[var(--ink)] focus:ring-1 focus:ring-[var(--ink)]",
+        "flex w-full items-center justify-between gap-2 rounded-[12px] border border-[var(--line)] bg-[var(--surface)] px-4 text-[15px] whitespace-nowrap text-[var(--ink)] shadow-none outline-none transition-all disabled:cursor-not-allowed disabled:opacity-50 data-[placeholder]:text-[var(--ink-muted)] hover:border-[var(--accent-soft)] data-[size=default]:h-11 data-[size=sm]:h-10 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg]:text-[var(--ink-muted)]",
+        "focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]",
         className
       )}
       {...props}
@@ -110,7 +110,7 @@ function SelectItem({
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "relative flex w-full cursor-default items-center gap-2 rounded-lg py-2 pr-8 pl-3 text-[15px] outline-hidden select-none transition-colors focus:bg-[var(--paper-warm)] focus:text-[var(--ink)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg]:text-[var(--ink-muted)]",
+        "relative flex w-full cursor-default items-center gap-2 rounded-lg py-2 pr-8 pl-3 text-[15px] outline-hidden select-none transition-colors focus:bg-[var(--accent-soft)] focus:text-[var(--accent)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg]:text-[var(--ink-muted)]",
         className
       )}
       {...props}
@@ -120,7 +120,7 @@ function SelectItem({
         className="absolute right-2.5 flex size-4 items-center justify-center"
       >
         <SelectPrimitive.ItemIndicator>
-          <CheckIcon className="size-4 text-[var(--ink)]" />
+          <CheckIcon className="size-4 text-[var(--accent)]" />
         </SelectPrimitive.ItemIndicator>
       </span>
       <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>

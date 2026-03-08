@@ -116,8 +116,9 @@ export default async function DashboardPage({
         
         {/* Streamlined Stats Overview */}
         <div className="flex flex-wrap items-center gap-x-12 gap-y-4 py-6 border-y border-[var(--line-subtle)]">
+          <div className="flex flex-wrap items-center gap-x-12 gap-y-4 py-6 border-y border-[var(--line-subtle)]">
           <div className="flex items-center gap-4">
-            <div className="flex items-center justify-center size-12 rounded-full bg-[var(--paper-warm)] text-[var(--ink-soft)]">
+            <div className="flex items-center justify-center size-12 rounded-full bg-[var(--accent-soft)] text-[var(--accent)]">
               <CalendarDays className="size-5" />
             </div>
             <div>
@@ -127,7 +128,7 @@ export default async function DashboardPage({
           </div>
           
           <div className="flex items-center gap-4">
-            <div className="flex items-center justify-center size-12 rounded-full bg-[#e8f3e8] text-[var(--ink-soft)]">
+            <div className="flex items-center justify-center size-12 rounded-full bg-emerald-500/20 text-emerald-300">
               <CheckCircle2 className="size-5" />
             </div>
             <div>
@@ -137,7 +138,7 @@ export default async function DashboardPage({
           </div>
           
           <div className="flex items-center gap-4">
-            <div className="flex items-center justify-center size-12 rounded-full bg-[#fff0e6] text-[#d48c6a]">
+            <div className="flex items-center justify-center size-12 rounded-full bg-amber-500/20 text-amber-300">
               <Clock className="size-5" />
             </div>
             <div>
@@ -145,6 +146,7 @@ export default async function DashboardPage({
               <div className="font-display text-2xl text-[var(--ink)]">{pendingCount}</div>
             </div>
           </div>
+        </div>
         </div>
       </header>
 

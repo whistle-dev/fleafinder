@@ -67,7 +67,7 @@ function ViewButton({
       {active && (
         <motion.div
           layoutId="view-toggle"
-          className="absolute inset-0 bg-[var(--ink)] rounded-[10px] shadow-md -z-10"
+          className="absolute inset-0 bg-[var(--accent)] rounded-[10px] shadow-md -z-10"
           transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
         />
       )}
@@ -130,7 +130,7 @@ export function ExplorerClient({ locale, dictionary, initialSnapshot }: Explorer
     <div className="space-y-6 md:space-y-10">
       {/* Elegant Header */}
       <div className="space-y-2 md:space-y-4 max-w-3xl">
-        <h1 className="font-display text-[clamp(2.25rem,6vw,3.5rem)] leading-[1.05] tracking-[-0.02em] text-[var(--ink)]">
+        <h1 className="font-display text-[clamp(2.25rem,6vw,3.5rem)] leading-[1.05] tracking-tight text-[var(--accent)]">
           {dictionary.title}
         </h1>
         <p className="text-base md:text-lg leading-relaxed text-[var(--ink-soft)]">{dictionary.intro}</p>
@@ -165,7 +165,7 @@ export function ExplorerClient({ locale, dictionary, initialSnapshot }: Explorer
               }
               value={filters.category}
             >
-              <SelectTrigger className="h-10 w-full sm:w-auto min-w-[140px] border-0 shadow-none bg-transparent hover:bg-[var(--paper-warm)] rounded-[10px] font-medium flex-1">
+              <SelectTrigger className="h-10 w-full sm:w-auto min-w-[140px] border-0 shadow-none bg-transparent hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] rounded-[10px] font-medium flex-1">
                 <SelectValue placeholder={dictionary.category} />
               </SelectTrigger>
               <SelectContent>
@@ -187,7 +187,7 @@ export function ExplorerClient({ locale, dictionary, initialSnapshot }: Explorer
               }
               value={filters.date}
             >
-              <SelectTrigger className="h-10 w-full sm:w-auto min-w-[130px] border-0 shadow-none bg-transparent hover:bg-[var(--paper-warm)] rounded-[10px] font-medium flex-1">
+              <SelectTrigger className="h-10 w-full sm:w-auto min-w-[130px] border-0 shadow-none bg-transparent hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] rounded-[10px] font-medium flex-1">
                 <SelectValue placeholder={dictionary.when} />
               </SelectTrigger>
               <SelectContent>
@@ -200,7 +200,7 @@ export function ExplorerClient({ locale, dictionary, initialSnapshot }: Explorer
         </div>
 
         {/* View Toggle */}
-        <div className="flex items-center justify-between sm:justify-start gap-1 bg-[var(--surface)] p-1.5 rounded-[14px] border border-[var(--line)] shadow-sm shrink-0">
+        <div className="flex items-center justify-between sm:justify-start gap-1 bg-[var(--surface)] p-1.5 rounded-[14px] border border-[var(--line)] shadow-sm shrink-0 sm:self-start lg:self-auto">
           <ViewButton id="list" active={filters.view === "list"} icon={List} label={dictionary.list} onClick={() => setFilters((current) => ({ ...current, view: "list" }))} />
           <ViewButton id="map" active={filters.view === "map"} icon={MapPinned} label={dictionary.map} onClick={() => setFilters((current) => ({ ...current, view: "map" }))} />
           <ViewButton id="calendar" active={filters.view === "calendar"} icon={CalendarDays} label={dictionary.calendar} onClick={() => setFilters((current) => ({ ...current, view: "calendar" }))} />

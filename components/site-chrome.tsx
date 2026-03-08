@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 
@@ -37,36 +38,40 @@ export function SiteChrome({
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div className="min-w-0">
               <Link href={`/${locale}`} className="group inline-block">
-                <div className="flex items-center gap-2">
-                  <span className="font-display text-[1.75rem] leading-none tracking-[-0.02em] text-[var(--ink)] group-hover:text-[var(--ink-soft)] transition-colors">
-                    Flea Finder
-                  </span>
-                  <span className="text-[var(--ink-light)] font-light text-xl">|</span>
-                  <span className="font-display text-[1.4rem] leading-none tracking-tight text-[var(--ink-muted)]">
-                    København
+                <div className="flex items-center gap-3">
+                  <div className="relative w-8 h-8 md:w-10 md:h-10 group-hover:scale-105 transition-transform duration-300">
+                    <Image 
+                      src="/flea-logo.png" 
+                      alt="FleaFinder Logo" 
+                      fill 
+                      className="object-contain"
+                    />
+                  </div>
+                  <span className="font-display font-bold text-[1.5rem] md:text-[2rem] leading-none tracking-[-0.02em] text-[var(--accent)] group-hover:opacity-80 transition-opacity">
+                    FLEAFINDER
                   </span>
                 </div>
               </Link>
             </div>
 
             <nav className="flex flex-wrap items-center gap-3">
-              <Link href={`/${locale}/markets`} className="text-sm font-medium text-[var(--ink-soft)] hover:text-[var(--ink)] transition-colors px-2 py-1">
+              <Link href={`/${locale}/markets`} className="text-sm font-medium text-[var(--ink-soft)] hover:text-[var(--accent)] transition-colors px-2 py-1">
                 {dictionary.navigation.explore}
               </Link>
               
               {profile ? (
                 <>
-                  <Link href={`/${locale}/dashboard`} className="text-sm font-medium text-[var(--ink-soft)] hover:text-[var(--ink)] transition-colors px-2 py-1">
+                  <Link href={`/${locale}/dashboard`} className="text-sm font-medium text-[var(--ink-soft)] hover:text-[var(--accent)] transition-colors px-2 py-1">
                     {dictionary.navigation.dashboard}
                   </Link>
                   {profile.role === "admin" && (
-                    <Link href={`/${locale}/admin`} className="text-sm font-medium text-[var(--ink-soft)] hover:text-[var(--ink)] transition-colors px-2 py-1">
+                    <Link href={`/${locale}/admin`} className="text-sm font-medium text-[var(--ink-soft)] hover:text-[var(--accent)] transition-colors px-2 py-1">
                       {dictionary.navigation.admin}
                     </Link>
                   )}
                   <form action={signOutAction} className="inline-block">
                     <input name="locale" type="hidden" value={locale} />
-                    <button type="submit" className="text-sm font-medium text-[var(--ink-soft)] hover:text-[var(--ink)] transition-colors px-2 py-1 cursor-pointer">
+                    <button type="submit" className="text-sm font-medium text-[var(--ink-soft)] hover:text-[var(--accent)] transition-colors px-2 py-1 cursor-pointer">
                       {dictionary.navigation.signOut}
                     </button>
                   </form>
@@ -93,14 +98,14 @@ export function SiteChrome({
         <footer className="mt-20 border-t border-[var(--line-subtle)] pt-8 pb-12">
           <div className="flex flex-col gap-4 text-sm text-[var(--ink-muted)] md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-2">
-              <span className="font-display text-lg tracking-tight text-[var(--ink)]">Flea Finder</span>
+              <span className="font-display font-bold text-lg tracking-[-0.02em] text-[var(--accent)]">FLEAFINDER</span>
               <span>&copy; {new Date().getFullYear()}</span>
             </div>
             <div className="flex gap-6">
-              <Link className="hover:text-[var(--ink)] transition-colors" href={`/${locale}/markets`}>
+              <Link className="hover:text-[var(--accent)] transition-colors" href={`/${locale}/markets`}>
                 {dictionary.navigation.explore}
               </Link>
-              <Link className="hover:text-[var(--ink)] transition-colors" href={`/${locale}/dashboard?series=new`}>
+              <Link className="hover:text-[var(--accent)] transition-colors" href={`/${locale}/dashboard?series=new`}>
                 {dictionary.navigation.addMarket}
               </Link>
             </div>

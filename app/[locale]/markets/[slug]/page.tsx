@@ -69,7 +69,7 @@ export default async function MarketDetailPage({
     <article className="max-w-5xl mx-auto space-y-12">
       {/* Navigation */}
       <BackLink
-        className="inline-flex items-center gap-2 text-sm font-medium text-[var(--ink-soft)] transition-colors hover:text-[var(--ink)]"
+        className="inline-flex items-center gap-2 text-sm font-medium text-[var(--ink-soft)] transition-colors hover:text-[var(--accent)]"
         fallbackHref={`/${locale}/markets`}
       >
         <ArrowLeft className="size-4" />
@@ -100,7 +100,7 @@ export default async function MarketDetailPage({
             <Badge variant="subtle">{market.city}</Badge>
           </div>
           
-          <h1 className="font-display text-[clamp(2.5rem,6vw,4rem)] leading-[1.05] tracking-[-0.02em] text-[var(--ink)]">
+          <h1 className="font-display text-[clamp(2.5rem,6vw,4rem)] leading-[1.05] tracking-[-0.02em] text-[var(--accent)]">
             {market.title}
           </h1>
           <p className="text-xl leading-relaxed text-[var(--ink-soft)]">
@@ -119,19 +119,19 @@ export default async function MarketDetailPage({
               <div className="text-xs font-medium uppercase tracking-widest text-[var(--ink-muted)]">
                 {dictionary.detail.vibe}
               </div>
-              <div className="font-display text-lg text-[var(--ink)]">{market.vibe}</div>
+              <div className="font-display text-lg text-[var(--accent)]">{market.vibe}</div>
             </div>
             <div className="space-y-1">
               <div className="text-xs font-medium uppercase tracking-widest text-[var(--ink-muted)]">
                 {dictionary.detail.address}
               </div>
-              <div className="text-lg text-[var(--ink)]">{market.addressLine}</div>
+              <div className="text-lg text-[var(--accent)]">{market.addressLine}</div>
             </div>
             <div className="space-y-1 col-span-2 md:col-span-1">
               <div className="text-xs font-medium uppercase tracking-widest text-[var(--ink-muted)]">
                 {locale === "da" ? "Datoer" : "Dates"}
               </div>
-              <div className="text-lg text-[var(--ink)]">
+              <div className="text-lg text-[var(--accent)]">
                 {locale === "da"
                   ? `${market.occurrences.length} planlagte`
                   : `${market.occurrences.length} scheduled`}
@@ -141,28 +141,28 @@ export default async function MarketDetailPage({
 
           {/* Schedule */}
           <div className="space-y-6">
-            <h2 className="font-display text-2xl text-[var(--ink)]">{dictionary.detail.nextDates}</h2>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {market.occurrences.slice(0, 6).map((occurrence) => (
-                <div 
-                  className="group flex flex-col justify-center rounded-xl bg-[var(--surface)] border border-[var(--line)] p-5 hover:border-[var(--ink-muted)] transition-colors" 
-                  key={occurrence.id}
-                >
-                  <div className="font-display text-xl text-[var(--ink)] mb-1">
-                    {formatDate(occurrence.startAt, locale)}
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-[var(--ink-soft)]">
-                    <Clock3 className="size-3.5" />
-                    <span>{formatTimeRange(occurrence.startAt, occurrence.endAt, locale)}</span>
-                  </div>
+            <h2 className="font-display text-2xl text-[var(--accent)]">{dictionary.detail.nextDates}</h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {market.occurrences.slice(0, 6).map((occurrence) => (
+              <div 
+                className="group flex flex-col justify-center rounded-xl bg-[var(--surface)] border border-[var(--line)] p-5 hover:border-[var(--accent)] transition-colors" 
+                key={occurrence.id}
+              >
+                <div className="font-display text-xl text-[var(--accent)] mb-1 group-hover:text-[var(--accent-dark)] transition-colors">
+                  {formatDate(occurrence.startAt, locale)}
                 </div>
-              ))}
-            </div>
+                <div className="flex items-center gap-2 text-sm text-[var(--ink-soft)]">
+                  <Clock3 className="size-3.5 text-[var(--accent)]" />
+                  <span>{formatTimeRange(occurrence.startAt, occurrence.endAt, locale)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
           </div>
           
           {/* Map Section */}
           <div className="space-y-6">
-            <h2 className="font-display text-2xl text-[var(--ink)]">
+            <h2 className="font-display text-2xl text-[var(--accent)]">
               {locale === "da" ? "Find vej" : "Location"}
             </h2>
             <div className="h-[400px] w-full rounded-[16px] overflow-hidden">
@@ -174,7 +174,7 @@ export default async function MarketDetailPage({
         {/* Right Column - Sticky Sidebar */}
         <div>
           <div className="sticky top-8 space-y-6 bg-[var(--surface)] border border-[var(--line)] rounded-2xl p-6 shadow-sm">
-            <h3 className="font-display text-xl text-[var(--ink)]">
+            <h3 className="font-display text-xl text-[var(--accent)]">
               {locale === "da" ? "Praktisk info" : "Practical info"}
             </h3>
             
@@ -185,8 +185,8 @@ export default async function MarketDetailPage({
                   <div className="text-xs font-medium uppercase tracking-widest text-[var(--ink-muted)]">
                     {locale === "da" ? "Næste gang" : "Next up"}
                   </div>
-                  <div className="flex items-center gap-3 text-[var(--ink)]">
-                    <CalendarDays className="size-5 text-[var(--ink-soft)]" />
+                  <div className="flex items-center gap-3 text-[var(--accent)]">
+                    <CalendarDays className="size-5 text-[var(--accent)]" />
                     <span className="font-medium">{formatDate(nextOccurrence.startAt, locale)}</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-[var(--ink-soft)] pl-8">
@@ -200,8 +200,8 @@ export default async function MarketDetailPage({
                 <div className="text-xs font-medium uppercase tracking-widest text-[var(--ink-muted)]">
                   {locale === "da" ? "Sted" : "Venue"}
                 </div>
-                <div className="flex items-start gap-3 text-[var(--ink)]">
-                  <MapPin className="mt-0.5 size-5 shrink-0 text-[var(--ink-soft)]" />
+                <div className="flex items-start gap-3 text-[var(--accent)]">
+                  <MapPin className="mt-0.5 size-5 shrink-0 text-[var(--accent)]" />
                   <div>
                     <div className="font-medium">{market.venueName || market.addressLine}</div>
                     {market.venueName && <div className="text-sm text-[var(--ink-soft)]">{market.addressLine}</div>}
@@ -215,9 +215,9 @@ export default async function MarketDetailPage({
                 <div className="text-xs font-medium uppercase tracking-widest text-[var(--ink-muted)]">
                   {locale === "da" ? "Kontakt" : "Contact"}
                 </div>
-                <div className="flex items-center gap-3 text-[var(--ink)]">
-                  <Mail className="size-5 shrink-0 text-[var(--ink-soft)]" />
-                  <a href={`mailto:${market.contactEmail}`} className="text-sm hover:underline">{market.contactEmail}</a>
+                <div className="flex items-center gap-3 text-[var(--accent)]">
+                  <Mail className="size-5 shrink-0 text-[var(--accent)]" />
+                  <a href={`mailto:${market.contactEmail}`} className="text-sm hover:text-[var(--accent)] hover:underline transition-colors">{market.contactEmail}</a>
                 </div>
               </div>
 
@@ -227,22 +227,22 @@ export default async function MarketDetailPage({
               <div className="space-y-3 pt-2">
                 {nextOccurrence && (
                   <>
-                    <Button asChild className="w-full">
+                    <Button asChild className="w-full h-12 font-semibold rounded-2xl text-[15px]">
                       <a download={`${market.slug}.ics`} href={calendarData}>
-                        <CalendarDays className="size-4" />
+                        <CalendarDays className="size-4 mr-1.5" />
                         {dictionary.detail.addToCalendar}
                       </a>
                     </Button>
-                    <Button asChild className="w-full" variant="outline">
+                    <Button asChild variant="outline" className="w-full h-12 font-semibold rounded-2xl text-[15px]">
                       <a href={googleCalendarUrl} rel="noreferrer" target="_blank">
                         {dictionary.detail.googleCalendar}
                       </a>
                     </Button>
                   </>
                 )}
-                <Button asChild className="w-full" variant="soft">
+                <Button asChild variant="secondary" className="w-full h-12 font-semibold rounded-2xl text-[15px] border border-[var(--line-strong)] hover:border-[var(--accent)]">
                   <a href={`https://maps.google.com/?q=${encodeURIComponent(locationLabel)}`} rel="noreferrer" target="_blank">
-                    <MapPin className="size-4" />
+                    <MapPin className="size-4 mr-1.5" />
                     {dictionary.common.openMap}
                   </a>
                 </Button>

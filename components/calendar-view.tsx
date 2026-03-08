@@ -101,20 +101,20 @@ function MarketPopover({
       <PopoverTrigger asChild>
         <button
           className={cn(
-            "w-full text-left transition-[background-color,border-color,box-shadow,color] duration-200 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[var(--ink)] block group",
+            "w-full text-left transition-[background-color,border-color,box-shadow,color] duration-200 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] block group",
             compact
-              ? "py-1 px-2 hover:bg-[var(--paper-warm)]"
-              : "p-2 bg-[var(--surface)] border border-[var(--line-subtle)] hover:border-[var(--line-strong)] hover:shadow-sm"
+              ? "py-1 px-2 hover:bg-[var(--surface-elevated)]"
+              : "p-2 bg-[var(--surface)] border border-[var(--line-subtle)] hover:border-[var(--accent-soft)] hover:shadow-sm"
           )}
           type="button"
         >
           <div className="flex-1 min-w-0">
-            <div className="truncate text-xs font-medium text-[var(--ink)] group-hover:text-[var(--ink-soft)] transition-colors">
+            <div className="truncate text-xs font-medium text-[var(--ink)] group-hover:text-[var(--accent)] transition-colors">
               {entry.title}
             </div>
             {!compact && (
               <div className="mt-0.5 truncate text-[0.65rem] text-[var(--ink-soft)] flex items-center gap-1">
-                <Clock3 className="size-3" />
+                <Clock3 className="size-3 text-[var(--accent)]" />
                 {formatTimeRange(entry.startAt, entry.endAt, locale)}
               </div>
             )}
@@ -131,26 +131,26 @@ function MarketPopover({
             {locale === "da" ? "Marked" : "Market"}
           </Badge>
           
-          <h4 className="font-display text-lg leading-tight text-[var(--ink)]">
+          <h4 className="font-display text-lg leading-tight text-[var(--accent)]">
             {entry.title}
           </h4>
 
           <div className="space-y-1.5 pt-1">
             <div className="flex items-center gap-2 text-xs text-[var(--ink-soft)]">
-              <Clock3 className="size-3.5 shrink-0 opacity-70" />
+              <Clock3 className="size-3.5 shrink-0 opacity-70 text-[var(--accent)]" />
               <span className="font-medium">
                 {formatTimeRange(entry.startAt, entry.endAt, locale)}
               </span>
             </div>
             <div className="flex items-center gap-2 text-xs text-[var(--ink-soft)]">
-              <MapPin className="size-3.5 shrink-0 opacity-70" />
+              <MapPin className="size-3.5 shrink-0 opacity-70 text-[var(--accent)]" />
               <span className="font-medium truncate">{entry.city}</span>
             </div>
           </div>
         </div>
         
-        <div className="p-2 border-t border-[var(--line-subtle)] bg-[var(--paper-warm)]">
-          <Link href={`/${locale}/markets/${entry.slug}`} className="group/link flex w-full items-center justify-between rounded-lg p-2 text-xs font-medium text-[var(--ink)] transition-colors hover:bg-[rgba(45,40,35,0.06)]">
+        <div className="p-2 border-t border-[var(--line-subtle)] bg-[var(--surface-elevated)]">
+          <Link href={`/${locale}/markets/${entry.slug}`} className="group/link flex w-full items-center justify-between rounded-lg p-2 text-xs font-medium text-[var(--accent)] transition-colors hover:bg-[var(--accent-soft)]">
             {locale === "da" ? "Læs mere" : "View details"}
             <ArrowRight className="size-3.5 transform transition-transform group-hover/link:translate-x-0.5" />
           </Link>
@@ -175,7 +175,7 @@ function DayOverflowPopover({
     <Popover>
       <PopoverTrigger asChild>
         <button
-          className="w-full py-0.5 px-2 text-left rounded-md transition-colors hover:bg-[var(--paper-warm)] text-[0.65rem] font-medium text-[var(--ink-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ink)] hover:text-[var(--ink)] flex items-center gap-1 mt-0.5"
+          className="w-full py-0.5 px-2 text-left rounded-md transition-colors hover:bg-[var(--accent-soft)] text-[0.65rem] font-medium text-[var(--ink-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] hover:text-[var(--accent)] flex items-center gap-1 mt-0.5"
           type="button"
         >
           <span className="w-3 h-px bg-[var(--line-strong)]" />
@@ -187,9 +187,9 @@ function DayOverflowPopover({
         sideOffset={6}
         className="w-[300px] p-0 overflow-hidden shadow-[var(--shadow-xl)] rounded-3xl border border-[var(--line-subtle)] bg-[var(--surface)] flex flex-col"
       >
-        <div className="px-5 py-4 border-b border-[var(--line-subtle)] bg-[var(--paper-warm)] flex items-center justify-between shrink-0">
+        <div className="px-5 py-4 border-b border-[var(--line-subtle)] bg-[var(--surface-elevated)] flex items-center justify-between shrink-0">
           <div>
-            <h4 className="font-display text-xl text-[var(--ink)] leading-none mb-1.5">
+            <h4 className="font-display text-xl text-[var(--accent)] leading-none mb-1.5">
               {dayLabel}
             </h4>
             <p className="text-[0.75rem] font-medium text-[var(--ink-soft)]">
@@ -288,7 +288,7 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               className="space-y-1"
             >
-              <h2 className="font-display text-[clamp(2.5rem,5vw,4rem)] leading-[0.9] tracking-[-0.03em] text-[var(--ink)] capitalize">
+              <h2 className="font-display text-[clamp(2.5rem,5vw,4rem)] leading-[0.9] tracking-tight text-[var(--accent)] capitalize">
                 {monthName}
                 <span className="block text-[clamp(1.25rem,3vw,1.75rem)] text-[var(--ink-muted)] mt-1 opacity-70">
                   {yearName}
@@ -300,29 +300,29 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
           {/* Controls */}
           <div className="flex flex-wrap items-center gap-4">
             {/* Stats pill - Desktop only */}
-            <div className="hidden sm:flex items-center gap-6 rounded-full bg-[rgba(255,255,255,0.6)] backdrop-blur-md px-6 py-2 border border-[var(--line-subtle)]">
+            <div className="hidden sm:flex items-center gap-6 rounded-full bg-[var(--surface-elevated)] px-6 py-2 border border-[var(--line-subtle)]">
               <div className="flex flex-col">
                 <span className="text-[0.65rem] font-bold uppercase tracking-[0.15em] text-[var(--ink-muted)]">
                   {locale === "da" ? "Aktive dage" : "Active Days"}
                 </span>
-                <span className="font-display text-[1.4rem] leading-none text-[var(--ink)] mt-0.5">{activeDayCount}</span>
+                <span className="font-display text-[1.4rem] leading-none text-[var(--accent)] mt-0.5">{activeDayCount}</span>
               </div>
               <div className="h-8 w-px bg-[var(--line-subtle)]" />
               <div className="flex flex-col">
                 <span className="text-[0.65rem] font-bold uppercase tracking-[0.15em] text-[var(--ink-muted)]">
                   {locale === "da" ? "Markeder" : "Markets"}
                 </span>
-                <span className="font-display text-[1.4rem] leading-none text-[var(--ink)] mt-0.5">{visibleMonthEntries.length}</span>
+                <span className="font-display text-[1.4rem] leading-none text-[var(--accent)] mt-0.5">{visibleMonthEntries.length}</span>
               </div>
             </div>
 
             {/* Nav pill */}
-            <div className="flex items-center gap-1 rounded-full bg-[rgba(255,255,255,0.7)] backdrop-blur-md p-1 border border-[var(--line-subtle)]">
+            <div className="flex items-center gap-1 rounded-full bg-[var(--surface-elevated)] p-1 border border-[var(--line-subtle)]">
               <Button
                 onClick={() => setVisibleMonth((current) => addMonths(current, -1))}
                 size="icon"
                 variant="ghost"
-                className="rounded-full"
+                className="rounded-full text-[var(--ink)] hover:text-[var(--accent)] hover:bg-[var(--accent-soft)]"
                 type="button"
               >
                 <ChevronLeft className="size-4" />
@@ -330,7 +330,7 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
               <Button
                 onClick={() => setVisibleMonth(getMonthStart(new Date()))}
                 variant="ghost"
-                className="rounded-full font-medium"
+                className="rounded-full font-medium text-[var(--ink)] hover:text-[var(--ink)] hover:bg-[var(--accent)]"
                 type="button"
               >
                 {locale === "da" ? "I dag" : "Today"}
@@ -339,7 +339,7 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
                 onClick={() => setVisibleMonth((current) => addMonths(current, 1))}
                 size="icon"
                 variant="ghost"
-                className="rounded-full"
+                className="rounded-full text-[var(--ink)] hover:text-[var(--accent)] hover:bg-[var(--accent-soft)]"
                 type="button"
               >
                 <ChevronRight className="size-4" />
@@ -349,7 +349,7 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
         </div>
 
         {/* DESKTOP GRID */}
-        <div className="hidden lg:block rounded-3xl bg-[rgba(255,255,255,0.6)] backdrop-blur-2xl border border-[var(--line-subtle)] p-6 shadow-sm">
+        <div className="hidden lg:block rounded-3xl bg-[var(--surface)] border border-[var(--line-subtle)] p-6 shadow-sm">
           <div className="grid grid-cols-7 gap-x-3 gap-y-3">
             {/* Weekdays */}
             {weekdayLabels.map((label) => (
@@ -382,9 +382,9 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
                   className={cn(
                     "relative min-h-[110px] p-2 flex flex-col gap-1.5 rounded-2xl border transition-[background-color,border-color,box-shadow] duration-200",
                     hasEntries
-                      ? "bg-white shadow-[0_2px_8px_rgba(0,0,0,0.02)] border-[var(--line-subtle)]"
-                      : "border-transparent hover:bg-white/40",
-                    isToday && !hasEntries && "bg-white/50"
+                      ? "bg-[var(--surface-elevated)] shadow-[0_2px_8px_rgba(0,0,0,0.02)] border-[var(--line-subtle)]"
+                      : "border-transparent hover:bg-[var(--surface-elevated)]/50",
+                    isToday && !hasEntries && "bg-[var(--surface-elevated)]"
                   )}
                   key={cell.dayKey}
                 >
@@ -393,16 +393,16 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
                     <span
                       className={cn(
                         "font-display text-lg leading-none rounded-full px-2 py-1 transition-colors",
-                        hasEntries ? "text-[var(--ink)]" : "text-[var(--ink-muted)]",
-                        isToday && "bg-[rgba(215,198,162,0.22)] text-[var(--ink)]"
+                        hasEntries ? "text-[var(--accent)]" : "text-[var(--ink-muted)]",
+                        isToday && "bg-[var(--accent)] text-[var(--surface-elevated)]"
                       )}
                     >
                       {cell.dayNumber}
                     </span>
                     <div className="mt-1 flex items-center gap-1.5">
-                      {isToday && !hasEntries && <span className="h-1.5 w-1.5 rounded-full bg-[var(--ink-muted)]/35" />}
+                      {isToday && !hasEntries && <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]/50" />}
                       {hasEntries && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--ink)]" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />
                       )}
                     </div>
                   </div>
@@ -458,14 +458,14 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
                       {/* Timeline Node */}
                       <div
                         className={cn(
-                          "absolute left-[18px] top-[10px] z-10 h-3 w-3 rounded-full bg-[var(--surface)] border-[3px] border-[var(--ink)] shadow-[0_0_0_4px_var(--paper)]",
+                          "absolute left-[18px] top-[10px] z-10 h-3 w-3 rounded-full bg-[var(--surface)] border-[3px] border-[var(--accent)] shadow-[0_0_0_4px_var(--paper)]",
                           isToday && "border-[var(--line-strong)]"
                         )}
                       />
 
                       <div className="pl-10 pr-2">
                         <div className="mb-4">
-                          <h3 className="font-display text-[1.6rem] text-[var(--ink)] capitalize tracking-[-0.02em] leading-tight">
+                          <h3 className="font-display text-[1.6rem] text-[var(--accent)] capitalize tracking-tight leading-tight">
                             {dayLabel}
                           </h3>
                         </div>
@@ -478,19 +478,19 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
                             >
                               <div className="flex justify-between items-start gap-4">
                                 <div className="flex-1">
-                                  <div className="font-display text-xl text-[var(--ink)]">
+                                  <div className="font-display text-xl text-[var(--accent)]">
                                     {entry.title}
                                   </div>
                                   <div className="mt-2 flex items-center gap-2 text-sm text-[var(--ink-soft)] font-medium">
-                                    <Clock3 className="size-3.5 opacity-70" />
+                                    <Clock3 className="size-3.5 opacity-70 text-[var(--accent)]" />
                                     {formatTimeRange(entry.startAt, entry.endAt, locale)}
                                   </div>
                                   <div className="mt-1 flex items-center gap-2 text-sm text-[var(--ink-soft)] font-medium">
-                                    <MapPin className="size-3.5 opacity-70" />
+                                    <MapPin className="size-3.5 opacity-70 text-[var(--accent)]" />
                                     {entry.city}
                                   </div>
                                 </div>
-                                <div className="flex size-8 items-center justify-center rounded-full bg-[var(--paper-warm)] text-[var(--ink)] transition-colors group-hover:bg-[var(--ink)] group-hover:text-[var(--paper)] shrink-0">
+                                <div className="flex size-8 items-center justify-center rounded-full bg-[var(--surface-elevated)] text-[var(--accent)] transition-colors group-hover:bg-[var(--accent)] group-hover:text-[#335405] shrink-0">
                                   <ArrowRight className="size-3.5" />
                                 </div>
                               </div>
@@ -505,10 +505,10 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
             </>
           ) : (
             <div className="rounded-3xl border border-dashed border-[var(--line-strong)] bg-[rgba(255,255,255,0.4)] p-10 text-center">
-              <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-[var(--surface)] shadow-sm border border-[var(--line-subtle)] text-[var(--ink-muted)]">
+              <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-[var(--surface)] shadow-sm border border-[var(--line-subtle)] text-[var(--accent)]">
                 <CalendarDays className="size-5" />
               </div>
-              <div className="mt-4 font-display text-xl text-[var(--ink)]">
+              <div className="mt-4 font-display text-xl text-[var(--accent)]">
                 {locale === "da" ? "Ingen markeder i denne måned" : "No markets in this month"}
               </div>
               <p className="mt-2 text-[var(--ink-soft)] text-sm">

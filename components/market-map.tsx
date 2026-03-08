@@ -99,7 +99,7 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
           theme: "monochrome",
           lightPreset: "dawn",
           showPointOfInterestLabels: false,
-          showRoadLabels: false,
+          showRoadLabels: true,
           showTransitLabels: false
         }
       },
@@ -135,22 +135,19 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
       const addressLabel = market.venueName ? `${market.venueName}, ${market.addressLine}` : market.addressLine;
 
       root.innerHTML = `
-        <div style="margin-bottom: 0.5rem;">
-          <span style="display: inline-block; padding: 0.125rem 0.375rem; background: var(--paper-warm); color: var(--ink-soft); font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: bold; border-radius: 4px;">
-            ${localeRef.current === "da" ? "Marked" : "Market"}
-          </span>
-        </div>
-        <strong style="font-family: var(--font-fraunces), serif; font-size: 1.125rem; line-height: 1.1; color: var(--ink); display: block; margin-bottom: 0.25rem;">
-          ${market.title}
-        </strong>
-        <div style="display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.75rem; color: var(--ink-soft); margin-top: 0.25rem;">
-          <div style="display: flex; align-items: center; gap: 0.35rem;">
-            <svg style="width: 14px; height: 14px; opacity: 0.7; flex-shrink: 0;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${addressLabel}</span>
-          </div>
-          <div style="display: flex; align-items: center; gap: 0.35rem;">
-             <svg style="width: 14px; height: 14px; opacity: 0.7; flex-shrink: 0;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-             <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${market.vibe}</span>
+        <div style="background-color: transparent; padding: 0.5rem 0.25rem;">
+          <strong style="font-family: var(--font-fraunces), Georgia, serif; font-size: 1.125rem; font-weight: 400; line-height: 1.1; color: var(--accent); display: block; margin-bottom: 0.25rem;">
+            ${market.title}
+          </strong>
+          <div style="display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.75rem; color: var(--ink-soft); margin-top: 0.25rem;">
+            <div style="display: flex; align-items: center; gap: 0.35rem;">
+              <svg style="width: 14px; height: 14px; opacity: 0.7; flex-shrink: 0; color: var(--accent);" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink-soft);">${addressLabel}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.35rem;">
+               <svg style="width: 14px; height: 14px; opacity: 0.7; flex-shrink: 0; color: var(--accent);" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+               <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink-soft);">${market.vibe}</span>
+            </div>
           </div>
         </div>
       `;
@@ -161,6 +158,8 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
       const anchor = document.createElement("a");
       anchor.href = `/${localeRef.current}/markets/${market.slug}`;
       anchor.className = "map-popup__link";
+      anchor.style.backgroundColor = "transparent";
+      anchor.style.color = "var(--accent)";
       anchor.innerHTML = `
         <span>
            ${localeRef.current === "da" ? "Læs mere" : "View details"}
@@ -219,8 +218,8 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
         source: MARKET_SOURCE_ID,
         paint: {
           "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, 12, 13, 16],
-          "circle-color": "rgba(74, 89, 76, 0.12)",
-          "circle-blur": 0.85
+          "circle-color": "rgba(254, 185, 242, 0.4)",
+          "circle-blur": 0.5
         }
       });
 
@@ -229,10 +228,10 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
         type: "circle",
         source: MARKET_SOURCE_ID,
         paint: {
-          "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, 8, 13, 10],
-          "circle-color": "#f8f4ec",
-          "circle-stroke-color": "rgba(74, 89, 76, 0.24)",
-          "circle-stroke-width": 1.5
+          "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, 8, 13, 12],
+          "circle-color": "#feb9f2",
+          "circle-stroke-color": "#335405",
+          "circle-stroke-width": 2.5
         }
       });
 
@@ -242,11 +241,11 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
         source: MARKET_SOURCE_ID,
         layout: {
           "text-field": ["get", "letter"],
-          "text-size": ["interpolate", ["linear"], ["zoom"], 9, 10, 13, 12],
+          "text-size": ["interpolate", ["linear"], ["zoom"], 9, 10, 13, 13],
           "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"]
         },
         paint: {
-          "text-color": "#354237"
+          "text-color": "#335405"
         }
       });
       syncMapData(true);
@@ -409,6 +408,9 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
               "absolute inset-0 z-0 h-full w-full transition-opacity duration-300",
               isMapReady ? "opacity-100" : "opacity-0"
             )}
+            style={{
+              filter: "sepia(0.25) hue-rotate(60deg) saturate(0.8) brightness(0.85) contrast(1.2)"
+            }}
             ref={mapRef}
           />
           {!isMapReady ? (

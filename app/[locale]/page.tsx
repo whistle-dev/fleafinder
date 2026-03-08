@@ -21,7 +21,7 @@ export default async function LocaleHomePage({
     <div className="space-y-24 pt-8 md:pt-16">
       {/* Editorial Hero */}
       <section className="mx-auto max-w-3xl text-center space-y-6">
-        <h1 className="font-display text-[clamp(2.5rem,7vw,4.5rem)] leading-[1.05] tracking-[-0.02em] text-[var(--ink)]">
+        <h1 className="font-display text-[clamp(2.5rem,7vw,4.5rem)] leading-[1.05] tracking-tight text-[var(--accent)]">
           {locale === "da" 
             ? "Byens loppemarkeder" 
             : "The city's flea markets"}
@@ -49,10 +49,10 @@ export default async function LocaleHomePage({
       {/* Mixed Markets Grid */}
       <section className="space-y-8">
         <div className="flex items-end justify-between border-b border-[var(--line)] pb-4">
-          <h2 className="font-display text-2xl text-[var(--ink)]">
+          <h2 className="font-display text-2xl text-[var(--accent)]">
             {locale === "da" ? "Kommende markeder" : "Upcoming markets"}
           </h2>
-          <Link href={`/${locale}/markets`} className="text-sm font-medium text-[var(--ink-soft)] hover:text-[var(--ink)] transition-colors">
+          <Link href={`/${locale}/markets`} className="text-sm font-medium text-[var(--ink-soft)] hover:text-[var(--accent)] transition-colors">
             {locale === "da" ? "Se alle →" : "View all →"}
           </Link>
         </div>
@@ -78,8 +78,8 @@ export default async function LocaleHomePage({
 
       {/* Minimal Footer CTA */}
       <section className="py-20 text-center">
-        <div className="inline-flex flex-col items-center space-y-4 rounded-3xl bg-[var(--paper-cream)] px-8 py-12 md:px-16 md:py-16">
-          <h2 className="font-display text-3xl tracking-tight text-[var(--ink)]">
+        <div className="inline-flex flex-col items-center space-y-4 rounded-3xl bg-[var(--surface-elevated)] px-8 py-12 md:px-16 md:py-16">
+          <h2 className="font-display text-3xl tracking-tight text-[var(--accent)]">
             {locale === "da" ? "Arrangerer du et marked?" : "Organizing a market?"}
           </h2>
           <p className="max-w-md text-[var(--ink-soft)]">
