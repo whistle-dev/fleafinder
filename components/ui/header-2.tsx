@@ -1,0 +1,180 @@
+'use client';
+import React from 'react';
+import Link from 'next/link';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { MenuToggleIcon } from '@/components/ui/menu-toggle-icon';
+import { useScroll } from '@/components/ui/use-scroll';
+
+interface HeaderLink {
+	label: string;
+	href: string;
+}
+
+export function Header({
+	logo,
+	links,
+	actions,
+	mobileActions,
+}: {
+	logo: React.ReactNode;
+	links: HeaderLink[];
+	actions: React.ReactNode;
+	mobileActions?: React.ReactNode;
+}) {
+	const [open, setOpen] = React.useState(false);
+	const scrolled = useScroll(10);
+	const pathname = usePathname();
+	const searchParams = useSearchParams();
+	const menuId = React.useId();
+
+	const closeMenu = React.useCallback(() => {
+		setOpen(false);
+	}, []);
+
+	React.useEffect(() => {
+		closeMenu();
+	}, [pathname, searchParams, closeMenu]);
+
+	React.useLayoutEffect(() => {
+		const { body, documentElement } = document;
+
+		if (open) {
+			body.style.overflow = 'hidden';
+			body.style.touchAction = 'none';
+			body.style.overscrollBehavior = 'none';
+			documentElement.style.overflow = 'hidden';
+			documentElement.style.overscrollBehavior = 'none';
+		} else {
+			body.style.overflow = '';
+			body.style.touchAction = '';
+			body.style.overscrollBehavior = '';
+			documentElement.style.overflow = '';
+			documentElement.style.overscrollBehavior = '';
+		}
+
+		return () => {
+			body.style.overflow = '';
+			body.style.touchAction = '';
+			body.style.overscrollBehavior = '';
+			documentElement.style.overflow = '';
+			documentElement.style.overscrollBehavior = '';
+		};
+	}, [open]);
+
+	React.useEffect(() => {
+		const onKeyDown = (event: KeyboardEvent) => {
+			if (event.key === 'Escape') {
+				closeMenu();
+			}
+		};
+
+		window.addEventListener('keydown', onKeyDown);
+		return () => window.removeEventListener('keydown', onKeyDown);
+	}, [closeMenu]);
+
+	React.useEffect(() => {
+		const onResize = () => {
+			if (window.innerWidth >= 768) {
+				closeMenu();
+			}
+		};
+
+		window.addEventListener('resize', onResize);
+		return () => window.removeEventListener('resize', onResize);
+	}, [closeMenu]);
+
+	return (
+		<>
+			{open ? <div aria-hidden="true" className="h-[calc(4.75rem+var(--safe-top))] md:hidden" /> : null}
+			<header
+				className={cn(
+					'sticky top-0 z-50 w-full border-transparent md:mx-auto md:max-w-5xl md:rounded-md md:border md:transition-all md:ease-out md:mt-4',
+					{
+						'fixed inset-x-0 top-0 md:sticky md:inset-auto md:top-4':
+							open,
+						'bg-[var(--surface)]/95 supports-[backdrop-filter]:bg-[var(--surface)]/50 border-b border-[var(--line)] md:border backdrop-blur-lg md:top-4 md:max-w-4xl md:shadow':
+							scrolled && !open,
+						'bg-[var(--surface)]/95 border-b border-[var(--line)]':
+							open,
+					},
+				)}
+			>
+			<nav
+				className={cn(
+					'flex h-[calc(4.75rem+var(--safe-top))] w-full items-center justify-between pl-[calc(1.25rem+var(--safe-left))] pr-[calc(1.25rem+var(--safe-right))] pt-[var(--safe-top)] md:h-14 md:px-4 md:pt-0 md:transition-all md:ease-out',
+					{
+						'md:px-2': scrolled,
+					},
+				)}
+			>
+				{logo}
+				<div className="hidden items-center gap-2 md:flex">
+					{links.map((link, i) => (
+						<Link key={i} className={buttonVariants({ variant: 'ghost' })} href={link.href}>
+							{link.label}
+						</Link>
+					))}
+					{actions}
+				</div>
+				<Button
+					size="icon"
+					variant="outline"
+					type="button"
+					aria-expanded={open}
+					aria-controls={menuId}
+					aria-label={open ? 'Close menu' : 'Open menu'}
+					onClick={() => setOpen((current) => !current)}
+					className="size-11 rounded-2xl md:hidden"
+				>
+					<MenuToggleIcon open={open} className="size-5" duration={300} />
+				</Button>
+			</nav>
+
+			<div
+				id={menuId}
+				aria-hidden={!open}
+				className={cn(
+					'fixed inset-x-0 bottom-0 top-[calc(4.75rem+var(--safe-top))] z-50 border-b border-[var(--line)] bg-[var(--surface)]/95 supports-[backdrop-filter]:bg-[var(--surface)]/90 backdrop-blur-md md:hidden transition-[opacity,transform] duration-300 ease-out',
+					open ? 'pointer-events-auto opacity-100 translate-y-0' : 'pointer-events-none opacity-0 -translate-y-3',
+				)}
+			>
+				<div className="flex h-full min-h-[calc(100dvh-4.75rem-var(--safe-top))] w-full flex-col overflow-y-auto overscroll-contain pl-[calc(1.5rem+var(--safe-left))] pr-[calc(1.5rem+var(--safe-right))] pb-[calc(1.5rem+var(--safe-bottom))] pt-6 [WebkitOverflowScrolling:touch]">
+					<div className="flex w-full flex-col gap-y-3 pb-4">
+						{links.map((link, i) => (
+							<Link
+								key={link.label}
+								onClick={closeMenu}
+								className={cn(
+									'inline-flex items-center justify-end rounded-[var(--radius-lg)] px-4 py-3 text-right text-3xl font-display tracking-tight text-[var(--ink)] transition-all duration-500 ease-out hover:bg-[var(--surface-elevated)] hover:text-[var(--accent)]',
+									open ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'
+								)}
+								style={{ transitionDelay: `${100 + i * 50}ms` }}
+								href={link.href}
+							>
+								{link.label}
+							</Link>
+						))}
+					</div>
+					<div
+						className={cn(
+							'mt-4 flex w-full flex-col gap-2 transition-all duration-500 ease-out',
+							open ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+						)}
+						style={{ transitionDelay: `${100 + links.length * 50}ms` }}
+					>
+						{mobileActions || actions}
+					</div>
+				</div>
+			</div>
+			</header>
+		</>
+	);
+}
+
+export const WordmarkIcon = (props: React.ComponentProps<"svg">) => (
+  <svg viewBox="0 0 84 24" fill="currentColor" {...props}>
+    <path d="M45.035 23.984c-1.34-.062-2.566-.441-3.777-1.16-1.938-1.152-3.465-3.187-4.02-5.36-.199-.784-.238-1.128-.234-2.058 0-.691.008-.87.062-1.207.23-1.5.852-2.883 1.852-4.144.297-.371 1.023-1.09 1.41-1.387 1.399-1.082 2.84-1.68 4.406-1.816.536-.047 1.528-.02 2.047.054 1.227.184 2.227.543 3.106 1.121 1.277.84 2.5 2.184 3.367 3.7.098.168.172.308.172.312-.004 0-1.047.723-2.32 1.598l-2.711 1.867c-.61.422-2.91 2.008-2.993 2.062l-.074.047-1-1.574c-.55-.867-1.008-1.594-1.012-1.61-.007-.019.922-.648 2.188-1.476 1.215-.793 2.2-1.453 2.191-1.46-.02-.032-.508-.27-.691-.34a5 5 0 0 0-.465-.13c-.371-.09-1.105-.125-1.426-.07-1.285.219-2.336 1.3-2.777 2.852-.215.761-.242 1.636-.074 2.355.129.527.383 1.102.691 1.543.234.332.727.82 1.047 1.031.664.434 1.195.586 1.969.555.613-.023 1.027-.129 1.64-.426 1.184-.574 2.16-1.554 2.828-2.843.122-.235.208-.372.227-.368.082.032 3.77 1.938 3.79 1.961.034.032-.407.93-.696 1.414a12 12 0 0 1-1.051 1.477c-.36.422-1.102 1.14-1.492 1.445a9.9 9.9 0 0 1-3.23 1.684 9.2 9.2 0 0 1-2.95.351M74.441 23.996c-1.488-.043-2.8-.363-4.066-.992-1.687-.848-2.992-2.14-3.793-3.774-.605-1.234-.863-2.402-.863-3.894.004-1.149.176-2.156.527-3.11.14-.378.531-1.171.75-1.515 1.078-1.703 2.758-2.934 4.805-3.524.847-.242 1.465-.332 2.433-.351 1.032-.024 1.743.055 2.48.277l.31.09.007 2.48c.004 1.364 0 2.481-.008 2.481a1 1 0 0 1-.12-.055c-.688-.347-2.09-.488-2.962-.296-.754.167-1.296.453-1.785.945a3.7 3.7 0 0 0-1.043 2.11c-.047.382-.02 1.109.055 1.437a3.4 3.4 0 0 0 .941 1.738c.75.75 1.715 1.102 2.875 1.05.645-.03 1.118-.14 1.563-.366q1.721-.864 2.02-3.145c.035-.293.042-1.266.042-7.957V0H84l-.012 8.434c-.008 7.851-.011 8.457-.054 8.757-.196 1.274-.586 2.25-1.301 3.243-1.293 1.808-3.555 3.07-6.145 3.437-.664.098-1.43.14-2.047.125M9.848 23.574a14 14 0 0 1-1.137-.152c-2.352-.426-4.555-1.781-6.117-3.774-.27-.335-.75-1.05-.95-1.406-1.156-2.047-1.695-4.27-1.64-6.77.047-1.995.43-3.66 1.23-5.316.524-1.086 1.04-1.87 1.793-2.715C4.567 1.72 6.652.535 8.793.171 9.68.02 10.093 0 12.297 0h1.789v5.441l-.961.016c-2.36.04-3.441.215-4.441.719-.836.414-1.278.879-1.895 1.976-.219.399-.535 1.02-.535 1.063 0 .02 1.285.027 3.918.027h3.914v5.113h-3.914c-2.54 0-3.918.008-3.918.028 0 .05.254.597.441.953.344.656.649 1.086 1.051 1.48.668.657 1.356.985 2.445 1.16.645.106 1.274.145 2.61.16l1.285.016v5.442l-2.055-.004a120 120 0 0 1-2.183-.016M16.469 14.715c0-5.504.011-9.04.031-9.29a5.54 5.54 0 0 1 1.527-3.48c.778-.82 1.922-1.457 3.118-1.734C21.915.035 22.422 0 24.39 0h1.652v4.914h-1.426c-1.324 0-1.445.004-1.644.055-.739.191-1.059.699-1.106 1.754l-.015.355h4.191v4.914h-4.184v11.602h-5.39ZM27.023 14.727c0-5.223.012-9.04.028-9.278.129-1.98 1.234-3.68 3.012-4.62.87-.462 1.777-.716 2.851-.802A61 61 0 0 1 34.945 0h1.649v4.914h-1.426c-1.32 0-1.441.004-1.64.055-.739.191-1.063.699-1.106 1.754l-.02.355h4.192v4.914H32.41v11.602h-5.387ZM55.48 15.406V7.22h4.66v1.363c0 1.3.005 1.363.051 1.363.04 0 .075-.054.133-.203.38-.98.969-1.68 1.711-2.031.563-.266 1.422-.43 2.492-.48l.414-.02v4.914l-.414.035c-.738.063-1.597.195-2.058.313-.297.082-.688.28-.875.449-.324.289-.532.703-.625 1.254-.094.547-.098.879-.098 5.144v4.274h-5.39Zm0 0" />
+  </svg>
+);

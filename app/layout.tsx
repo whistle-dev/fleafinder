@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Serif_Display, Fraunces, Instrument_Sans } from "next/font/google";
 import "mapbox-gl/dist/mapbox-gl.css";
 
@@ -48,6 +48,13 @@ export const metadata: Metadata = {
   formatDetection: {
     telephone: false
   }
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#335405"
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

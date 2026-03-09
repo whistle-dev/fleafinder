@@ -59,15 +59,14 @@ const dictionaries = {
       back: "Tilbage til markedskalender"
     },
     auth: {
-      title: "Log ind med e-mail og password",
-      intro:
-        "Arrangører kan oprette og redigere egne markeder. Admins modererer og publicerer nye opslag.",
+      title: "Log ind",
+      intro: "",
       email: "E-mail",
       password: "Password",
       signInButton: "Log ind",
       signUpButton: "Opret konto",
-      signInNote: "Brug din e-mail for at logge ind.",
-      signUpNote: "Nye arrangører kan oprette en konto her."
+      signInNote: "",
+      signUpNote: ""
     },
     dashboard: {
       title: "Arrangør-dashboard",
@@ -179,15 +178,14 @@ const dictionaries = {
       back: "Back to market calendar"
     },
     auth: {
-      title: "Sign in with email and password",
-      intro:
-        "Organizers can create and edit their own markets. Admins review and publish new submissions.",
+      title: "Sign in",
+      intro: "",
       email: "Email",
       password: "Password",
       signInButton: "Sign in",
       signUpButton: "Create account",
-      signInNote: "Use your email to sign in.",
-      signUpNote: "New organizers can create an account here."
+      signInNote: "",
+      signUpNote: ""
     },
     dashboard: {
       title: "Organizer dashboard",

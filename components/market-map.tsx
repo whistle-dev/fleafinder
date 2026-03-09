@@ -4,7 +4,11 @@ import mapboxgl from "mapbox-gl";
 import { MapPinned, WifiOff } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-import { COPENHAGEN_CENTER, COPENHAGEN_MAX_BOUNDS, isCopenhagenMarketLocation } from "@/lib/constants";
+import {
+  COPENHAGEN_CENTER,
+  COPENHAGEN_MAX_BOUNDS,
+  isCopenhagenMarketLocation,
+} from "@/lib/constants";
 import { cn } from "@/lib/cn";
 import { mapboxToken } from "@/lib/supabase/config";
 import type { Locale, MarketSeries } from "@/lib/types";
@@ -30,18 +34,22 @@ function buildFeatureCollection(markets: MarketSeries[]) {
       type: "Feature" as const,
       geometry: {
         type: "Point" as const,
-        coordinates: [market.longitude, market.latitude] as [number, number]
+        coordinates: [market.longitude, market.latitude] as [number, number],
       },
       properties: {
         id: market.id,
         title: market.title,
-        letter: market.title.slice(0, 1).toUpperCase()
-      }
-    }))
+        letter: market.title.slice(0, 1).toUpperCase(),
+      },
+    })),
   };
 }
 
-export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) {
+export function MarketMap({
+  locale,
+  markets,
+  isActive = true,
+}: MarketMapProps) {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstanceRef = useRef<mapboxgl.Map | null>(null);
   const popupRef = useRef<mapboxgl.Popup | null>(null);
@@ -55,8 +63,8 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
     isCopenhagenMarketLocation({
       city: market.city,
       latitude: market.latitude,
-      longitude: market.longitude
-    })
+      longitude: market.longitude,
+    }),
   );
 
   useEffect(() => {
@@ -100,31 +108,37 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
           lightPreset: "dawn",
           showPointOfInterestLabels: false,
           showRoadLabels: true,
-          showTransitLabels: false
-        }
+          showTransitLabels: false,
+        },
       },
       center: [COPENHAGEN_CENTER.longitude, COPENHAGEN_CENTER.latitude],
       zoom: COPENHAGEN_CENTER.zoom,
       minZoom: 9.2,
       maxZoom: 15.5,
       maxBounds: COPENHAGEN_MAX_BOUNDS,
-      renderWorldCopies: false
+      renderWorldCopies: false,
     });
     mapInstanceRef.current = map;
 
-    map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "top-right");
+    map.addControl(
+      new mapboxgl.NavigationControl({ showCompass: false }),
+      "top-right",
+    );
     map.touchZoomRotate.disableRotation();
 
-    const popup = new mapboxgl.Popup({ 
-      closeButton: false, 
-      offset: 18, 
-      maxWidth: "260px", 
+    const popup = new mapboxgl.Popup({
+      closeButton: false,
+      offset: 18,
+      maxWidth: "260px",
       focusAfterOpen: false,
-      anchor: "bottom" 
+      anchor: "bottom",
     });
     popupRef.current = popup;
 
-    const renderPopup = (market: MarketSeries, coordinates: [number, number]) => {
+    const renderPopup = (
+      market: MarketSeries,
+      coordinates: [number, number],
+    ) => {
       const popupNode = document.createElement("div");
       popupNode.className = "map-popup";
 
@@ -132,7 +146,9 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
       root.className = "map-popup__inner";
       popupNode.appendChild(root);
 
-      const addressLabel = market.venueName ? `${market.venueName}, ${market.addressLine}` : market.addressLine;
+      const addressLabel = market.venueName
+        ? `${market.venueName}, ${market.addressLine}`
+        : market.addressLine;
 
       root.innerHTML = `
         <div style="background-color: transparent; padding: 0.5rem 0.25rem;">
@@ -154,7 +170,7 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
 
       const linkWrapper = document.createElement("div");
       linkWrapper.className = "map-popup__link-wrapper";
-      
+
       const anchor = document.createElement("a");
       anchor.href = `/${localeRef.current}/markets/${market.slug}`;
       anchor.className = "map-popup__link";
@@ -173,7 +189,9 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
     };
 
     const syncMapData = (shouldFitBounds: boolean) => {
-      const source = map.getSource(MARKET_SOURCE_ID) as mapboxgl.GeoJSONSource | undefined;
+      const source = map.getSource(MARKET_SOURCE_ID) as
+        | mapboxgl.GeoJSONSource
+        | undefined;
 
       if (!source) {
         return;
@@ -192,13 +210,16 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
 
       if (!bounds.isEmpty()) {
         if (visibleMarketsRef.current.length === 1) {
-          map.setCenter([visibleMarketsRef.current[0].longitude, visibleMarketsRef.current[0].latitude]);
+          map.setCenter([
+            visibleMarketsRef.current[0].longitude,
+            visibleMarketsRef.current[0].latitude,
+          ]);
           map.setZoom(12.8);
         } else {
           map.fitBounds(bounds, {
             padding: 48,
             maxZoom: 12.8,
-            duration: 0
+            duration: 0,
           });
         }
       }
@@ -209,7 +230,7 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
 
       map.addSource(MARKET_SOURCE_ID, {
         type: "geojson",
-        data: buildFeatureCollection(visibleMarketsRef.current)
+        data: buildFeatureCollection(visibleMarketsRef.current),
       });
 
       map.addLayer({
@@ -219,8 +240,8 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
         paint: {
           "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, 12, 13, 16],
           "circle-color": "rgba(254, 185, 242, 0.4)",
-          "circle-blur": 0.5
-        }
+          "circle-blur": 0.5,
+        },
       });
 
       map.addLayer({
@@ -231,8 +252,8 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
           "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, 8, 13, 12],
           "circle-color": "#feb9f2",
           "circle-stroke-color": "#335405",
-          "circle-stroke-width": 2.5
-        }
+          "circle-stroke-width": 2.5,
+        },
       });
 
       map.addLayer({
@@ -242,11 +263,11 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
         layout: {
           "text-field": ["get", "letter"],
           "text-size": ["interpolate", ["linear"], ["zoom"], 9, 10, 13, 13],
-          "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"]
+          "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
         },
         paint: {
-          "text-color": "#335405"
-        }
+          "text-color": "#335405",
+        },
       });
       syncMapData(true);
 
@@ -262,31 +283,37 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
       });
     };
 
-    const handleMarkerClick = (event: mapboxgl.MapMouseEvent & { features?: mapboxgl.MapboxGeoJSONFeature[] }) => {
+    const handleMarkerClick = (
+      event: mapboxgl.MapMouseEvent & {
+        features?: mapboxgl.MapboxGeoJSONFeature[];
+      },
+    ) => {
       const feature = event.features?.[0];
 
       if (!feature || feature.geometry.type !== "Point") {
         return;
       }
 
-      const market = visibleMarketsRef.current.find((entry) => entry.id === String(feature.properties?.id));
+      const market = visibleMarketsRef.current.find(
+        (entry) => entry.id === String(feature.properties?.id),
+      );
 
       if (!market) {
         return;
       }
 
       const coordinates = [...feature.geometry.coordinates] as [number, number];
-      
+
       popup.remove();
       renderPopup(market, coordinates);
-      
+
       if (visibleMarketsRef.current.length > 1) {
         const targetZoom = Math.min(Math.max(map.getZoom() + 0.8, 13.2), 14.4);
         map.easeTo({
           center: coordinates,
           zoom: targetZoom,
           duration: 550,
-          essential: true
+          essential: true,
         });
       }
     };
@@ -304,7 +331,7 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
       map.resize();
     });
     resizeObserverRef.current = resizeObserver;
-    
+
     if (mapRef.current) {
       resizeObserver.observe(mapRef.current);
     }
@@ -334,7 +361,9 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
       return;
     }
 
-    const source = map.getSource(MARKET_SOURCE_ID) as mapboxgl.GeoJSONSource | undefined;
+    const source = map.getSource(MARKET_SOURCE_ID) as
+      | mapboxgl.GeoJSONSource
+      | undefined;
 
     if (!source) {
       return;
@@ -353,13 +382,16 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
 
     if (!bounds.isEmpty()) {
       if (visibleMarkets.length === 1) {
-        map.setCenter([visibleMarkets[0].longitude, visibleMarkets[0].latitude]);
+        map.setCenter([
+          visibleMarkets[0].longitude,
+          visibleMarkets[0].latitude,
+        ]);
         map.setZoom(12.8);
       } else {
         map.fitBounds(bounds, {
           padding: 48,
           maxZoom: 12.8,
-          duration: 0
+          duration: 0,
         });
       }
     }
@@ -382,23 +414,39 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
   }, [isActive, isMapReady]);
 
   return (
-    <div className={cn("relative w-full h-full min-h-[300px] bg-[var(--paper-warm)]", !mapboxToken && "p-6 flex flex-col items-center justify-center text-center border border-[var(--line)] rounded-2xl")}>
+    <div
+      className={cn(
+        "relative w-full h-full min-h-[300px] bg-[var(--paper-warm)]",
+        !mapboxToken &&
+          "p-6 flex flex-col items-center justify-center text-center border border-[var(--line)] rounded-2xl",
+      )}
+    >
       {!mapboxToken || isOffline ? (
         <div className="max-w-md space-y-4">
           <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-[var(--surface)] text-[var(--ink-muted)] mb-2 shadow-sm border border-[var(--line-subtle)]">
-            {isOffline ? <WifiOff className="size-5" /> : <MapPinned className="size-5" />}
+            {isOffline ? (
+              <WifiOff className="size-5" />
+            ) : (
+              <MapPinned className="size-5" />
+            )}
           </div>
           <h3 className="font-display text-xl text-[var(--ink)]">
-            {isOffline 
-              ? (locale === "da" ? "Kortet kræver netværk" : "The map needs a connection")
-              : (locale === "da" ? "Kortet mangler nøgle" : "The map needs a token")
-            }
+            {isOffline
+              ? locale === "da"
+                ? "Kortet kræver netværk"
+                : "The map needs a connection"
+              : locale === "da"
+                ? "Kortet mangler nøgle"
+                : "The map needs a token"}
           </h3>
           <p className="text-[var(--ink-soft)] text-sm">
             {isOffline
-              ? (locale === "da" ? "Du kan stadig åbne markederne fra listen." : "You can still open markets from the list.")
-              : (locale === "da" ? "Tilføj NEXT_PUBLIC_MAPBOX_TOKEN for at aktivere kortet." : "Add NEXT_PUBLIC_MAPBOX_TOKEN to enable the map.")
-            }
+              ? locale === "da"
+                ? "Du kan stadig åbne markederne fra listen."
+                : "You can still open markets from the list."
+              : locale === "da"
+                ? "Tilføj NEXT_PUBLIC_MAPBOX_TOKEN for at aktivere kortet."
+                : "Add NEXT_PUBLIC_MAPBOX_TOKEN to enable the map."}
           </p>
         </div>
       ) : (
@@ -406,10 +454,11 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
           <div
             className={cn(
               "absolute inset-0 z-0 h-full w-full transition-opacity duration-300",
-              isMapReady ? "opacity-100" : "opacity-0"
+              isMapReady ? "opacity-100" : "opacity-0",
             )}
             style={{
-              filter: "sepia(0.25) hue-rotate(60deg) saturate(0.8) brightness(0.85) contrast(1.2)"
+              filter:
+                "sepia(0.25) hue-rotate(60deg) saturate(0.8) brightness(0.85) contrast(1.2)",
             }}
             ref={mapRef}
           />
@@ -425,7 +474,9 @@ export function MarketMap({ locale, markets, isActive = true }: MarketMapProps) 
           ) : null}
           {visibleMarkets.length === 0 ? (
             <div className="pointer-events-none absolute inset-x-6 bottom-6 z-10 rounded-xl border border-[var(--line-subtle)] bg-[color-mix(in_srgb,var(--surface)_90%,transparent)] px-4 py-3 text-center text-sm font-medium text-[var(--ink-soft)] backdrop-blur-md shadow-sm">
-              {locale === "da" ? "Ingen markeder fundet i området." : "No markets found in this area."}
+              {locale === "da"
+                ? "Ingen markeder fundet i området."
+                : "No markets found in this area."}
             </div>
           ) : null}
         </>

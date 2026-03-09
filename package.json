@@ -27,7 +27,7 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
-    "framer-motion": "^12.35.0",
+    "framer-motion": "^12.35.2",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.511.0",
     "mapbox-gl": "^3.11.1",
@@ -41,7 +41,8 @@
     "react-resizable-panels": "^4.7.1",
     "recharts": "^2.15.4",
     "sonner": "^2.0.7",
-    "tailwind-merge": "^3.3.0",
+    "tailwind-merge": "^3.5.0",
+    "uuid": "^13.0.0",
     "vaul": "^1.1.2",
     "zod": "^4.3.6"
   },
@@ -50,6 +51,7 @@
     "@types/node": "^22.13.8",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@types/uuid": "^10.0.0",
     "supabase": "^2.53.3",
     "tailwindcss": "^4.1.8",
     "typescript": "^5.8.2"

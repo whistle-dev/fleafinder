@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { ArrowLeft, CalendarDays, Clock3, Mail, MapPin } from "lucide-react";
+import { CalendarDays, Clock3, Mail, MapPin } from "lucide-react";
 import { notFound } from "next/navigation";
 
 import { CATEGORY_LABELS } from "@/lib/constants";
@@ -9,8 +9,8 @@ import { getDictionary } from "@/lib/i18n";
 import type { Locale } from "@/lib/types";
 import { createIcsFile, formatDate, formatTimeRange, getCoverTintGradient, getNextOccurrence, isLocale } from "@/lib/utils";
 
-import { BackLink } from "@/components/back-link";
 import { MarketMap } from "@/components/market-map";
+import { BackButton } from "@/components/ui/back-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -66,18 +66,13 @@ export default async function MarketDetailPage({
     : "";
 
   return (
-    <article className="max-w-5xl mx-auto space-y-12">
-      {/* Navigation */}
-      <BackLink
-        className="inline-flex items-center gap-2 text-sm font-medium text-[var(--ink-soft)] transition-colors hover:text-[var(--accent)]"
-        fallbackHref={`/${locale}/markets`}
-      >
-        <ArrowLeft className="size-4" />
-        {dictionary.detail.back}
-      </BackLink>
-
+    <article className="max-w-5xl mx-auto space-y-12 pt-8 md:pt-12">
       {/* Hero Header */}
       <header className="space-y-8">
+        <BackButton fallbackHref={`/${locale}/markets`}>
+          {locale === "da" ? "Tilbage" : "Back"}
+        </BackButton>
+
         <div 
           className="relative w-full h-[40vh] min-h-[300px] max-h-[500px] rounded-[32px] overflow-hidden shadow-sm border border-[var(--line-subtle)]"
           style={!market.coverImageUrl ? { background: getCoverTintGradient(market.coverTint) } : undefined}

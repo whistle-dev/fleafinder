@@ -1,4 +1,10 @@
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
 import type { DateFilter, ExplorerFilters, Locale, MarketOccurrence, MarketSeries } from "@/lib/types";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
 
 import { DEFAULT_FILTERS } from "@/lib/constants";
 

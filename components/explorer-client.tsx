@@ -14,7 +14,14 @@ import { CalendarView } from "@/components/calendar-view";
 import { MarketCard } from "@/components/market-card";
 import { MarketMap } from "@/components/market-map";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type ExplorerClientProps = {
   locale: Locale;
@@ -45,7 +52,7 @@ function ViewButton({
   icon: Icon,
   label,
   onClick,
-  id
+  id,
 }: {
   active: boolean;
   icon: typeof List;
@@ -57,9 +64,9 @@ function ViewButton({
     <button
       className={cn(
         "relative flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 h-10 text-sm font-medium rounded-[10px] transition-colors duration-200 cursor-pointer z-10",
-        active 
-          ? "text-[var(--paper)]" 
-          : "text-[var(--ink-soft)] hover:bg-[var(--paper-warm)] hover:text-[var(--ink)]"
+        active
+          ? "text-[var(--paper)]"
+          : "text-[var(--ink-soft)] hover:bg-[var(--paper-warm)] hover:text-[var(--ink)]",
       )}
       onClick={onClick}
       type="button"
@@ -72,19 +79,40 @@ function ViewButton({
         />
       )}
       <Icon className="size-4 relative z-10" />
-      <span className="hidden md:inline lg:hidden xl:inline relative z-10">{label}</span>
+      <span className="hidden md:inline lg:hidden xl:inline relative z-10">
+        {label}
+      </span>
     </button>
   );
 }
 
-export function ExplorerClient({ locale, dictionary, initialSnapshot }: ExplorerClientProps) {
+export function ExplorerClient({
+  locale,
+  dictionary,
+  initialSnapshot,
+}: ExplorerClientProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const [filters, setFilters] = useState<ExplorerFilters>(initialSnapshot.filters);
+  const [filters, setFilters] = useState<ExplorerFilters>(
+    initialSnapshot.filters,
+  );
   const [snapshot, setSnapshot] = useState(initialSnapshot);
   const [isOffline, setIsOffline] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showSpinner, setShowSpinner] = useState(false);
   const deferredQuery = useDeferredValue(filters.q);
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    if (isLoading) {
+      timeoutId = setTimeout(() => {
+        setShowSpinner(true);
+      }, 300);
+    } else {
+      setShowSpinner(false);
+    }
+    return () => clearTimeout(timeoutId);
+  }, [isLoading]);
 
   useEffect(() => {
     setIsOffline(!navigator.onLine);
@@ -111,7 +139,7 @@ export function ExplorerClient({ locale, dictionary, initialSnapshot }: Explorer
     setIsLoading(true);
 
     fetch(`/api/explorer?locale=${locale}&${query}`, {
-      signal: controller.signal
+      signal: controller.signal,
     })
       .then(async (response) => {
         if (!response.ok) return;
@@ -124,18 +152,28 @@ export function ExplorerClient({ locale, dictionary, initialSnapshot }: Explorer
       });
 
     return () => controller.abort();
-  }, [deferredQuery, filters.category, filters.date, filters.view, locale, pathname, router]);
+  }, [
+    deferredQuery,
+    filters.category,
+    filters.date,
+    filters.view,
+    locale,
+    pathname,
+    router,
+  ]);
 
   return (
-    <div className="space-y-6 md:space-y-10">
+    <div className="space-y-6 md:space-y-10 pt-8 md:pt-12">
       {/* Elegant Header */}
       <div className="space-y-2 md:space-y-4 max-w-3xl">
         <h1 className="font-display text-[clamp(2.25rem,6vw,3.5rem)] leading-[1.05] tracking-tight text-[var(--accent)]">
           {dictionary.title}
         </h1>
-        <p className="text-base md:text-lg leading-relaxed text-[var(--ink-soft)]">{dictionary.intro}</p>
+        <p className="text-base md:text-lg leading-relaxed text-[var(--ink-soft)]">
+          {dictionary.intro}
+        </p>
       </div>
-      
+
       {/* Search, Filters, and View */}
       <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 relative z-10">
         {/* Search & Filters Container */}
@@ -145,7 +183,9 @@ export function ExplorerClient({ locale, dictionary, initialSnapshot }: Explorer
             <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-[var(--ink-muted)]" />
             <Input
               className="h-10 pl-10 border-0 shadow-none bg-transparent focus-visible:ring-0 placeholder:text-[var(--ink-muted)] text-[var(--ink)] font-medium"
-              onChange={(event) => setFilters((current) => ({ ...current, q: event.target.value }))}
+              onChange={(event) =>
+                setFilters((current) => ({ ...current, q: event.target.value }))
+              }
               placeholder={dictionary.searchPlaceholder}
               type="search"
               value={filters.q}
@@ -160,7 +200,7 @@ export function ExplorerClient({ locale, dictionary, initialSnapshot }: Explorer
               onValueChange={(value) =>
                 setFilters((current) => ({
                   ...current,
-                  category: value as ExplorerFilters["category"]
+                  category: value as ExplorerFilters["category"],
                 }))
               }
               value={filters.category}
@@ -182,7 +222,7 @@ export function ExplorerClient({ locale, dictionary, initialSnapshot }: Explorer
               onValueChange={(value) =>
                 setFilters((current) => ({
                   ...current,
-                  date: value as ExplorerFilters["date"]
+                  date: value as ExplorerFilters["date"],
                 }))
               }
               value={filters.date}
@@ -201,9 +241,33 @@ export function ExplorerClient({ locale, dictionary, initialSnapshot }: Explorer
 
         {/* View Toggle */}
         <div className="flex items-center justify-between sm:justify-start gap-1 bg-[var(--surface)] p-1.5 rounded-[14px] border border-[var(--line)] shadow-sm shrink-0 sm:self-start lg:self-auto">
-          <ViewButton id="list" active={filters.view === "list"} icon={List} label={dictionary.list} onClick={() => setFilters((current) => ({ ...current, view: "list" }))} />
-          <ViewButton id="map" active={filters.view === "map"} icon={MapPinned} label={dictionary.map} onClick={() => setFilters((current) => ({ ...current, view: "map" }))} />
-          <ViewButton id="calendar" active={filters.view === "calendar"} icon={CalendarDays} label={dictionary.calendar} onClick={() => setFilters((current) => ({ ...current, view: "calendar" }))} />
+          <ViewButton
+            id="list"
+            active={filters.view === "list"}
+            icon={List}
+            label={dictionary.list}
+            onClick={() =>
+              setFilters((current) => ({ ...current, view: "list" }))
+            }
+          />
+          <ViewButton
+            id="map"
+            active={filters.view === "map"}
+            icon={MapPinned}
+            label={dictionary.map}
+            onClick={() =>
+              setFilters((current) => ({ ...current, view: "map" }))
+            }
+          />
+          <ViewButton
+            id="calendar"
+            active={filters.view === "calendar"}
+            icon={CalendarDays}
+            label={dictionary.calendar}
+            onClick={() =>
+              setFilters((current) => ({ ...current, view: "calendar" }))
+            }
+          />
         </div>
       </div>
 
@@ -215,49 +279,57 @@ export function ExplorerClient({ locale, dictionary, initialSnapshot }: Explorer
       ) : null}
 
       {/* Views */}
-      <div className="min-h-[50vh]">
+      <div className="min-h-[50vh] relative">
         {filters.view === "list" ? (
-          snapshot.markets.length > 0 ? (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {snapshot.markets.map((market, i) => (
-                <motion.div
-                  key={market.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.03, duration: 0.4 }}
-                >
-                  <MarketCard locale={locale} market={market} />
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            <div className="py-24 text-center">
-              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-[var(--paper-cream)] text-[var(--ink-muted)]">
-                <Search className="size-5" />
+          <div className="relative min-h-[200px]">
+            {showSpinner && (
+              <div className="absolute inset-0 z-50 flex items-start justify-center pt-24 bg-[var(--background)]/50 backdrop-blur-[2px] rounded-[24px]">
+                <Spinner className="size-8 text-[var(--accent)]" />
               </div>
-              <h3 className="font-display text-xl text-[var(--ink)] mb-2">
-                {locale === "da" ? "Ingen markeder fundet" : "No markets found"}
-              </h3>
-              <p className="text-[var(--ink-soft)]">{dictionary.empty}</p>
-            </div>
-          )
+            )}
+            {snapshot.markets.length > 0 ? (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {snapshot.markets.map((market, i) => (
+                  <motion.div
+                    key={market.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.03, duration: 0.4 }}
+                  >
+                    <MarketCard locale={locale} market={market} />
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <div className="py-24 text-center">
+                <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-[var(--paper-cream)] text-[var(--ink-muted)]">
+                  <Search className="size-5" />
+                </div>
+                <h3 className="font-display text-xl text-[var(--ink)] mb-2">
+                  {locale === "da" ? "Ingen markeder fundet" : "No markets found"}
+                </h3>
+                <p className="text-[var(--ink-soft)]">{dictionary.empty}</p>
+              </div>
+            )}
+          </div>
         ) : null}
 
         <motion.div
           animate={{ opacity: filters.view === "map" ? 1 : 0 }}
           className={cn(
             "h-[70vh] min-h-[500px] w-full rounded-[24px] overflow-hidden shadow-sm",
-            filters.view === "map" ? "block" : "hidden"
+            filters.view === "map" ? "block" : "hidden",
           )}
           initial={false}
         >
-          <MarketMap isActive={filters.view === "map"} locale={locale} markets={snapshot.markets} />
+          <MarketMap
+            isActive={filters.view === "map"}
+            locale={locale}
+            markets={snapshot.markets}
+          />
         </motion.div>
         {filters.view === "calendar" ? (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <CalendarView locale={locale} markets={snapshot.markets} />
           </motion.div>
         ) : null}

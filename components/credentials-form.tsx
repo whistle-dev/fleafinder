@@ -86,9 +86,11 @@ export function CredentialsForm({
                 <Label htmlFor="credentials-password">{dictionary.password}</Label>
                 <Input autoComplete="current-password" id="credentials-password" name="password" required type="password" />
               </div>
-              <p className="text-sm leading-6 text-[var(--ink-soft)]">
-                {signInState.message ? <span className="text-[var(--terracotta)]">{signInState.message}</span> : dictionary.signInNote}
-              </p>
+              {(signInState.message || dictionary.signInNote) && (
+                <p className="text-sm leading-6 text-[var(--ink-soft)]">
+                  {signInState.message ? <span className="text-[var(--terracotta)]">{signInState.message}</span> : dictionary.signInNote}
+                </p>
+              )}
               <SubmitButton className="w-full" size="lg" variant="default">
                 {dictionary.signInButton}
               </SubmitButton>
@@ -112,9 +114,11 @@ export function CredentialsForm({
                 <Label htmlFor="credentials-password-signup">{dictionary.password}</Label>
                 <Input autoComplete="new-password" id="credentials-password-signup" minLength={8} name="password" required type="password" />
               </div>
-              <p className="text-sm leading-6 text-[var(--ink-soft)]">
-                {signUpState.message ? <span className="text-[var(--terracotta)]">{signUpState.message}</span> : dictionary.signUpNote}
-              </p>
+              {(signUpState.message || dictionary.signUpNote) && (
+                <p className="text-sm leading-6 text-[var(--ink-soft)]">
+                  {signUpState.message ? <span className="text-[var(--terracotta)]">{signUpState.message}</span> : dictionary.signUpNote}
+                </p>
+              )}
               <SubmitButton className="w-full" size="lg" variant="default">
                 {dictionary.signUpButton}
               </SubmitButton>

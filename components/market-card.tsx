@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, MapPin } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import { CATEGORY_LABELS } from "@/lib/constants";
 import type { Locale, MarketSeries } from "@/lib/types";
@@ -32,102 +32,93 @@ export function MarketCard({
   return (
     <Link
       href={`/${locale}/markets/${market.slug}`}
-      className="group block h-full outline-none"
+      className="group block h-[340px] sm:h-[320px] outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] rounded-2xl"
     >
-      <article className="flex flex-col gap-4 h-full relative">
-        {/* Borderless Square Image Container */}
-        <div
-          className={`relative w-full aspect-square overflow-hidden rounded-[2rem] transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:shadow-[var(--shadow-xl)] group-hover:-translate-y-1 ${
-            featured
-              ? "ring-2 ring-[var(--ink)] ring-offset-4 ring-offset-[var(--paper)]"
-              : ""
-          }`}
-          style={
-            !market.coverImageUrl
-              ? { background: getCoverTintGradient(market.coverTint) }
-              : undefined
-          }
-        >
-          {market.coverImageUrl && (
-            <Image
-              src={market.coverImageUrl}
-              alt={market.title}
-              fill
-              unoptimized
-              className="object-cover transition-transform duration-1000 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-105"
-            />
-          )}
-          {/* Subtle vignette for bottom badges readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10 opacity-60 transition-opacity duration-700 group-hover:opacity-40" />
+      <article className="relative h-full flex flex-col w-full overflow-hidden rounded-2xl transition-transform duration-500 ease-out sm:hover:shadow-xl sm:hover:-translate-y-1 isolate">
+        
+        {/* Background Base (If no image) */}
+        <div 
+          className="absolute inset-0 z-0"
+          style={!market.coverImageUrl ? { background: getCoverTintGradient(market.coverTint) } : { background: 'var(--surface-elevated)' }}
+        />
 
-          {/* Top Left: Floating Date Leaf */}
+        {/* Image */}
+        {market.coverImageUrl && (
+          <Image
+            src={market.coverImageUrl}
+            alt={market.title}
+            fill
+            unoptimized
+            className="absolute inset-0 z-0 object-cover transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] sm:group-hover:scale-105"
+          />
+        )}
+        
+        {/* Dark tint only at bottom for text contrast */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent z-10 pointer-events-none" />
+        
+        {/* Top Section: Badges & Date */}
+        <div className="flex justify-between items-start p-3 sm:p-4 z-20 w-full">
+          {/* Left Badges */}
+          <div className="flex flex-wrap gap-1.5">
+            <span className="inline-flex px-2.5 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-white text-zinc-900 shadow-sm">
+              {CATEGORY_LABELS[market.category][locale]}
+            </span>
+
+            {featured && (
+              <span className="inline-flex px-2.5 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-[var(--accent)] text-zinc-900 shadow-sm">
+                {locale === "da" ? "Udvalgt" : "Featured"}
+              </span>
+            )}
+          </div>
+
+          {/* Right Date Leaf */}
           {dateLeaf && (
-            <div className="absolute top-4 left-4 flex flex-col items-center justify-center bg-[var(--surface-elevated)] text-[var(--accent)] shadow-lg rounded-2xl min-w-[4rem] p-2 text-center transition-transform duration-500 ease-out group-hover:scale-105">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--accent)] opacity-80 leading-none mb-1">
+            <div className="flex flex-col items-center justify-center bg-white/95 backdrop-blur-md text-zinc-900 rounded-lg min-w-[3rem] px-2.5 py-1.5 shadow-sm shrink-0 ml-2">
+              <span className="text-[10px] font-bold uppercase tracking-widest opacity-70 leading-none mb-0.5">
                 {dateLeaf.month}
               </span>
-              <span className="text-2xl font-display font-medium text-[var(--accent)] leading-none">
+              <span className="text-lg font-display font-bold leading-none">
                 {dateLeaf.day}
               </span>
             </div>
           )}
-
-          {/* Top Right: Featured Badge (if any) */}
-          {featured && (
-            <div className="absolute top-4 right-4">
-              <span className="inline-flex px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-widest bg-[var(--accent)] text-[#335405] shadow-md">
-                {locale === "da" ? "Udvalgt" : "Featured"}
-              </span>
-            </div>
-          )}
-
-          {/* Bottom Left: Category Pill */}
-          <div className="absolute bottom-4 left-4">
-            <span className="inline-flex px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-widest bg-[var(--surface)] text-[var(--accent)] shadow-md border border-[var(--line)]">
-              {CATEGORY_LABELS[market.category][locale]}
-            </span>
-          </div>
         </div>
 
-        {/* Minimal Content Section Below Image */}
-        <div className="flex flex-col flex-grow px-1">
-          <h3 className="font-display text-2xl leading-tight text-[var(--ink)] group-hover:text-[var(--accent)] transition-colors duration-300 line-clamp-2 mb-2">
-            {market.title}
-          </h3>
+        {/* Content Section Overlay */}
+        <div className="mt-auto flex items-end justify-between gap-3 p-3 sm:p-4 text-white w-full z-20 min-h-0">
+          <div className="flex flex-col min-w-0 flex-1 gap-1">
+            <h3 className="font-display text-xl font-semibold leading-tight drop-shadow-md line-clamp-2 transition-colors duration-300 text-white sm:group-hover:text-[var(--accent)]">
+              {market.title}
+            </h3>
 
-          <div className="flex flex-col gap-1 mt-auto">
-            {nextOccurrence ? (
-              <div className="flex items-center gap-2 text-[14px] text-[var(--ink-soft)] font-medium">
-                <span>
-                  {formatTimeRange(
-                    nextOccurrence.startAt,
-                    nextOccurrence.endAt,
-                    locale,
+            <div className="flex flex-col gap-0.5 text-[14px] drop-shadow-sm">
+              <span className="truncate text-white/95 font-medium" title={market.city}>
+                {market.city}
+              </span>
+              {nextOccurrence ? (
+                <span className="text-white/75 font-medium">
+                  {formatTimeRange(nextOccurrence.startAt, nextOccurrence.endAt, locale)}
+                  {market.occurrences.length > 1 && (
+                    <span className="text-white/60 ml-1">
+                      {locale === "da"
+                        ? (market.occurrences.length - 1 === 1
+                            ? "og 1 anden dato"
+                            : `og ${market.occurrences.length - 1} andre datoer`)
+                        : (market.occurrences.length - 1 === 1
+                            ? "and 1 other date"
+                            : `and ${market.occurrences.length - 1} other dates`)}
+                    </span>
                   )}
                 </span>
-                {market.occurrences.length > 1 && (
-                  <span className="text-[var(--ink-muted)]">
-                    &bull; +{market.occurrences.length - 1}{" "}
-                    {locale === "da" ? "mere" : "more"}
-                  </span>
-                )}
-              </div>
-            ) : (
-              <div className="text-[14px] text-[var(--ink-muted)] font-medium">
-                {locale === "da" ? "Ingen datoer" : "No dates"}
-              </div>
-            )}
-
-            <div className="flex items-center justify-between text-[14px] text-[var(--ink-soft)] mt-1">
-              <div className="flex items-center gap-1.5 truncate">
-                <MapPin className="size-3.5 opacity-70 shrink-0 text-[var(--accent)]" />
-                <span className="truncate">{market.city}</span>
-              </div>
-              <div className="flex items-center gap-1 font-bold text-[var(--ink)] opacity-0 -translate-x-3 transition-all duration-500 ease-out group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-[var(--accent)]">
-                {locale === "da" ? "Læs mere" : "Details"}
-                <ArrowRight className="size-3.5" />
-              </div>
+              ) : (
+                <span className="text-white/60 font-medium">{locale === "da" ? "Ingen datoer" : "No dates"}</span>
+              )}
             </div>
+          </div>
+
+          {/* Compact arrow: visible on mobile / on hover desktop */}
+          <div className="shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-white/25 backdrop-blur-sm text-white transition-all duration-300 opacity-100 translate-x-0 sm:opacity-0 sm:-translate-x-2 sm:group-hover:opacity-100 sm:group-hover:translate-x-0">
+            <ArrowRight className="w-3 h-3 -rotate-45 sm:group-hover:rotate-0 transition-transform duration-300" />
           </div>
         </div>
       </article>

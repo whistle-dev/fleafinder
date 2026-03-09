@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, CalendarDays, ChevronLeft, ChevronRight, Clock3, MapPin } from "lucide-react";
+import {
+  ArrowRight,
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  Clock3,
+  MapPin,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -14,7 +21,7 @@ import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -51,9 +58,9 @@ function buildEntries(markets: MarketSeries[]) {
           endAt: occurrence.endAt,
           city: market.city,
           dayKey: toDayKey(dayDate),
-          dayDate
+          dayDate,
         } satisfies CalendarEntry;
-      })
+      }),
     )
     .filter((entry) => !Number.isNaN(entry.dayDate.getTime()))
     .sort((left, right) => left.startAt.localeCompare(right.startAt));
@@ -67,7 +74,10 @@ function addMonths(date: Date, amount: number) {
   return new Date(date.getFullYear(), date.getMonth() + amount, 1);
 }
 
-function buildMonthCells(month: Date, eventsByDay: Map<string, CalendarEntry[]>) {
+function buildMonthCells(
+  month: Date,
+  eventsByDay: Map<string, CalendarEntry[]>,
+) {
   const monthStart = getMonthStart(month);
   const gridStart = new Date(monthStart);
   gridStart.setDate(monthStart.getDate() - ((monthStart.getDay() + 6) % 7));
@@ -82,7 +92,7 @@ function buildMonthCells(month: Date, eventsByDay: Map<string, CalendarEntry[]>)
       date,
       dayNumber: date.getDate(),
       inMonth: date.getMonth() === month.getMonth(),
-      entries: eventsByDay.get(dayKey) ?? []
+      entries: eventsByDay.get(dayKey) ?? [],
     };
   });
 }
@@ -90,7 +100,7 @@ function buildMonthCells(month: Date, eventsByDay: Map<string, CalendarEntry[]>)
 function MarketPopover({
   entry,
   locale,
-  compact = false
+  compact = false,
 }: {
   entry: CalendarEntry;
   locale: Locale;
@@ -104,7 +114,7 @@ function MarketPopover({
             "w-full text-left transition-[background-color,border-color,box-shadow,color] duration-200 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] block group",
             compact
               ? "py-1 px-2 hover:bg-[var(--surface-elevated)]"
-              : "p-2 bg-[var(--surface)] border border-[var(--line-subtle)] hover:border-[var(--accent-soft)] hover:shadow-sm"
+              : "p-2 bg-[var(--surface)] border border-[var(--line-subtle)] hover:border-[var(--accent-soft)] hover:shadow-sm",
           )}
           type="button"
         >
@@ -121,16 +131,19 @@ function MarketPopover({
           </div>
         </button>
       </PopoverTrigger>
-      <PopoverContent 
-        align="start" 
+      <PopoverContent
+        align="start"
         sideOffset={6}
         className="w-[260px] p-0 overflow-hidden shadow-[var(--shadow-lg)] rounded-[16px] border border-[var(--line-subtle)] bg-[var(--surface)]"
       >
         <div className="p-4 space-y-3">
-          <Badge variant="subtle" className="w-fit text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 bg-[var(--paper-warm)] text-[var(--ink-soft)] border-none">
+          <Badge
+            variant="subtle"
+            className="w-fit text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 bg-[var(--paper-warm)] text-[var(--ink-soft)] border-none"
+          >
             {locale === "da" ? "Marked" : "Market"}
           </Badge>
-          
+
           <h4 className="font-display text-lg leading-tight text-[var(--accent)]">
             {entry.title}
           </h4>
@@ -148,9 +161,12 @@ function MarketPopover({
             </div>
           </div>
         </div>
-        
+
         <div className="p-2 border-t border-[var(--line-subtle)] bg-[var(--surface-elevated)]">
-          <Link href={`/${locale}/markets/${entry.slug}`} className="group/link flex w-full items-center justify-between rounded-lg p-2 text-xs font-medium text-[var(--accent)] transition-colors hover:bg-[var(--accent-soft)]">
+          <Link
+            href={`/${locale}/markets/${entry.slug}`}
+            className="group/link flex w-full items-center justify-between rounded-lg p-2 text-xs font-medium text-[var(--accent)] transition-colors hover:bg-[var(--accent-soft)]"
+          >
             {locale === "da" ? "Læs mere" : "View details"}
             <ArrowRight className="size-3.5 transform transition-transform group-hover/link:translate-x-0.5" />
           </Link>
@@ -164,7 +180,7 @@ function DayOverflowPopover({
   dayLabel,
   entries,
   hiddenCount,
-  locale
+  locale,
 }: {
   dayLabel: string;
   entries: CalendarEntry[];
@@ -178,12 +194,12 @@ function DayOverflowPopover({
           className="w-full py-0.5 px-2 text-left rounded-md transition-colors hover:bg-[var(--accent-soft)] text-[0.65rem] font-medium text-[var(--ink-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] hover:text-[var(--accent)] flex items-center gap-1 mt-0.5"
           type="button"
         >
-          <span className="w-3 h-px bg-[var(--line-strong)]" />
-          +{hiddenCount} {locale === "da" ? "mere" : "more"}
+          <span className="w-3 h-px bg-[var(--line-strong)]" />+{hiddenCount}{" "}
+          {locale === "da" ? "mere" : "more"}
         </button>
       </PopoverTrigger>
-      <PopoverContent 
-        align="start" 
+      <PopoverContent
+        align="start"
         sideOffset={6}
         className="w-[300px] p-0 overflow-hidden shadow-[var(--shadow-xl)] rounded-3xl border border-[var(--line-subtle)] bg-[var(--surface)] flex flex-col"
       >
@@ -200,7 +216,12 @@ function DayOverflowPopover({
         <ScrollArea className="h-[280px]">
           <div className="flex flex-col gap-1.5 p-3">
             {entries.map((entry) => (
-              <MarketPopover compact={false} entry={entry} key={entry.id} locale={locale} />
+              <MarketPopover
+                compact={false}
+                entry={entry}
+                key={entry.id}
+                locale={locale}
+              />
             ))}
           </div>
         </ScrollArea>
@@ -209,10 +230,18 @@ function DayOverflowPopover({
   );
 }
 
-export function CalendarView({ locale, markets }: { locale: Locale; markets: MarketSeries[] }) {
+export function CalendarView({
+  locale,
+  markets,
+}: {
+  locale: Locale;
+  markets: MarketSeries[];
+}) {
   const entries = buildEntries(markets);
   const firstEntryDate = entries[0]?.dayDate;
-  const [visibleMonth, setVisibleMonth] = useState<Date>(getMonthStart(firstEntryDate ?? new Date()));
+  const [visibleMonth, setVisibleMonth] = useState<Date>(
+    getMonthStart(firstEntryDate ?? new Date()),
+  );
   const todayKey = toDayKey(new Date());
 
   useEffect(() => {
@@ -232,31 +261,40 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
   }
 
   const cells = buildMonthCells(visibleMonth, eventsByDay);
-  
+
   // Calculate the required number of rows so the calendar size adapts (hiding trailing empty rows)
   const reversedIndex = [...cells].reverse().findIndex((cell) => cell.inMonth);
-  const lastInMonthIndex = reversedIndex >= 0 ? cells.length - 1 - reversedIndex : cells.length - 1;
+  const lastInMonthIndex =
+    reversedIndex >= 0 ? cells.length - 1 - reversedIndex : cells.length - 1;
   const cellsToShow = Math.ceil((lastInMonthIndex + 1) / 7) * 7;
   const visibleCells = cells.slice(0, cellsToShow);
 
   const visibleMonthEntries = entries.filter(
     (entry) =>
       entry.dayDate.getMonth() === visibleMonth.getMonth() &&
-      entry.dayDate.getFullYear() === visibleMonth.getFullYear()
+      entry.dayDate.getFullYear() === visibleMonth.getFullYear(),
   );
-  
-  const activeDayCount = cells.filter((cell) => cell.inMonth && cell.entries.length > 0).length;
-  
-  const monthFormatter = new Intl.DateTimeFormat(locale === "da" ? "da-DK" : "en-GB", {
-    month: "long",
-    year: "numeric"
-  });
-  const monthParts = monthFormatter.formatToParts(visibleMonth);
-  const monthName = monthParts.find(p => p.type === "month")?.value ?? "";
-  const yearName = monthParts.find(p => p.type === "year")?.value ?? "";
 
-  const weekdayLabels = locale === "da" ? ["Man", "Tir", "Ons", "Tor", "Fre", "Lør", "Søn"] : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  
+  const activeDayCount = cells.filter(
+    (cell) => cell.inMonth && cell.entries.length > 0,
+  ).length;
+
+  const monthFormatter = new Intl.DateTimeFormat(
+    locale === "da" ? "da-DK" : "en-GB",
+    {
+      month: "long",
+      year: "numeric",
+    },
+  );
+  const monthParts = monthFormatter.formatToParts(visibleMonth);
+  const monthName = monthParts.find((p) => p.type === "month")?.value ?? "";
+  const yearName = monthParts.find((p) => p.type === "year")?.value ?? "";
+
+  const weekdayLabels =
+    locale === "da"
+      ? ["Man", "Tir", "Ons", "Tor", "Fre", "Lør", "Søn"]
+      : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
   const visibleMonthEntriesByDay = new Map<string, CalendarEntry[]>();
   for (const entry of visibleMonthEntries) {
     const bucket = visibleMonthEntriesByDay.get(entry.dayKey);
@@ -266,17 +304,15 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
       visibleMonthEntriesByDay.set(entry.dayKey, [entry]);
     }
   }
-  
+
   // Sort days for agenda view
-  const mobileAgendaDays = Array.from(visibleMonthEntriesByDay.entries())
-    .sort(([keyA], [keyB]) => keyA.localeCompare(keyB));
+  const mobileAgendaDays = Array.from(visibleMonthEntriesByDay.entries()).sort(
+    ([keyA], [keyB]) => keyA.localeCompare(keyB),
+  );
 
   return (
-    <div className="relative isolate">
-      {/* Decorative ambient background */}
-      <div className="pointer-events-none absolute -inset-x-10 -inset-y-10 z-[-1] bg-[radial-gradient(ellipse_at_top,var(--paper-cream),transparent_60%)] opacity-70" />
-
-      <div className="relative flex flex-col gap-10">
+    <div className="relative">
+      <div className="flex flex-col gap-10">
         {/* HEADER SECTION */}
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <AnimatePresence mode="popLayout">
@@ -305,21 +341,27 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
                 <span className="text-[0.65rem] font-bold uppercase tracking-[0.15em] text-[var(--ink-muted)]">
                   {locale === "da" ? "Aktive dage" : "Active Days"}
                 </span>
-                <span className="font-display text-[1.4rem] leading-none text-[var(--accent)] mt-0.5">{activeDayCount}</span>
+                <span className="font-display text-[1.4rem] leading-none text-[var(--accent)] mt-0.5">
+                  {activeDayCount}
+                </span>
               </div>
               <div className="h-8 w-px bg-[var(--line-subtle)]" />
               <div className="flex flex-col">
                 <span className="text-[0.65rem] font-bold uppercase tracking-[0.15em] text-[var(--ink-muted)]">
                   {locale === "da" ? "Markeder" : "Markets"}
                 </span>
-                <span className="font-display text-[1.4rem] leading-none text-[var(--accent)] mt-0.5">{visibleMonthEntries.length}</span>
+                <span className="font-display text-[1.4rem] leading-none text-[var(--accent)] mt-0.5">
+                  {visibleMonthEntries.length}
+                </span>
               </div>
             </div>
 
             {/* Nav pill */}
             <div className="flex items-center gap-1 rounded-full bg-[var(--surface-elevated)] p-1 border border-[var(--line-subtle)]">
               <Button
-                onClick={() => setVisibleMonth((current) => addMonths(current, -1))}
+                onClick={() =>
+                  setVisibleMonth((current) => addMonths(current, -1))
+                }
                 size="icon"
                 variant="ghost"
                 className="rounded-full text-[var(--ink)] hover:text-[var(--accent)] hover:bg-[var(--accent-soft)]"
@@ -336,7 +378,9 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
                 {locale === "da" ? "I dag" : "Today"}
               </Button>
               <Button
-                onClick={() => setVisibleMonth((current) => addMonths(current, 1))}
+                onClick={() =>
+                  setVisibleMonth((current) => addMonths(current, 1))
+                }
                 size="icon"
                 variant="ghost"
                 className="rounded-full text-[var(--ink)] hover:text-[var(--accent)] hover:bg-[var(--accent-soft)]"
@@ -363,11 +407,14 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
 
             {/* Days */}
             {visibleCells.map((cell) => {
-              const dayLabel = new Intl.DateTimeFormat(locale === "da" ? "da-DK" : "en-GB", {
-                weekday: "long",
-                day: "numeric",
-                month: "long"
-              }).format(cell.date);
+              const dayLabel = new Intl.DateTimeFormat(
+                locale === "da" ? "da-DK" : "en-GB",
+                {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+                },
+              ).format(cell.date);
 
               const hasEntries = cell.entries.length > 0;
               const isCurrentMonth = cell.inMonth;
@@ -384,7 +431,7 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
                     hasEntries
                       ? "bg-[var(--surface-elevated)] shadow-[0_2px_8px_rgba(0,0,0,0.02)] border-[var(--line-subtle)]"
                       : "border-transparent hover:bg-[var(--surface-elevated)]/50",
-                    isToday && !hasEntries && "bg-[var(--surface-elevated)]"
+                    isToday && !hasEntries && "bg-[var(--surface-elevated)]",
                   )}
                   key={cell.dayKey}
                 >
@@ -393,14 +440,19 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
                     <span
                       className={cn(
                         "font-display text-lg leading-none rounded-full px-2 py-1 transition-colors",
-                        hasEntries ? "text-[var(--accent)]" : "text-[var(--ink-muted)]",
-                        isToday && "bg-[var(--accent)] text-[var(--surface-elevated)]"
+                        hasEntries
+                          ? "text-[var(--accent)]"
+                          : "text-[var(--ink-muted)]",
+                        isToday &&
+                          "bg-[var(--accent)] text-[var(--surface-elevated)]",
                       )}
                     >
                       {cell.dayNumber}
                     </span>
                     <div className="mt-1 flex items-center gap-1.5">
-                      {isToday && !hasEntries && <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]/50" />}
+                      {isToday && !hasEntries && (
+                        <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]/50" />
+                      )}
                       {hasEntries && (
                         <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />
                       )}
@@ -411,7 +463,12 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
                   {hasEntries ? (
                     <div className="flex-1 space-y-1">
                       {cell.entries.slice(0, 2).map((entry) => (
-                        <MarketPopover compact entry={entry} key={entry.id} locale={locale} />
+                        <MarketPopover
+                          compact
+                          entry={entry}
+                          key={entry.id}
+                          locale={locale}
+                        />
                       ))}
                       {cell.entries.length > 2 && (
                         <DayOverflowPopover
@@ -440,11 +497,14 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
                 {mobileAgendaDays.map(([dayKey, dayEntries], index) => {
                   const dayDate = dayEntries[0].dayDate;
                   const isToday = dayKey === todayKey;
-                  const dayLabel = new Intl.DateTimeFormat(locale === "da" ? "da-DK" : "en-GB", {
-                    weekday: "long",
-                    day: "numeric",
-                    month: "long"
-                  }).format(dayDate);
+                  const dayLabel = new Intl.DateTimeFormat(
+                    locale === "da" ? "da-DK" : "en-GB",
+                    {
+                      weekday: "long",
+                      day: "numeric",
+                      month: "long",
+                    },
+                  ).format(dayDate);
 
                   return (
                     <motion.div
@@ -459,7 +519,7 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
                       <div
                         className={cn(
                           "absolute left-[18px] top-[10px] z-10 h-3 w-3 rounded-full bg-[var(--surface)] border-[3px] border-[var(--accent)] shadow-[0_0_0_4px_var(--paper)]",
-                          isToday && "border-[var(--line-strong)]"
+                          isToday && "border-[var(--line-strong)]",
                         )}
                       />
 
@@ -483,7 +543,11 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
                                   </div>
                                   <div className="mt-2 flex items-center gap-2 text-sm text-[var(--ink-soft)] font-medium">
                                     <Clock3 className="size-3.5 opacity-70 text-[var(--accent)]" />
-                                    {formatTimeRange(entry.startAt, entry.endAt, locale)}
+                                    {formatTimeRange(
+                                      entry.startAt,
+                                      entry.endAt,
+                                      locale,
+                                    )}
                                   </div>
                                   <div className="mt-1 flex items-center gap-2 text-sm text-[var(--ink-soft)] font-medium">
                                     <MapPin className="size-3.5 opacity-70 text-[var(--accent)]" />
@@ -509,10 +573,14 @@ export function CalendarView({ locale, markets }: { locale: Locale; markets: Mar
                 <CalendarDays className="size-5" />
               </div>
               <div className="mt-4 font-display text-xl text-[var(--accent)]">
-                {locale === "da" ? "Ingen markeder i denne måned" : "No markets in this month"}
+                {locale === "da"
+                  ? "Ingen markeder i denne måned"
+                  : "No markets in this month"}
               </div>
               <p className="mt-2 text-[var(--ink-soft)] text-sm">
-                {locale === "da" ? "Prøv at navigere til en anden måned for at finde flere markeder." : "Try navigating to another month to find more markets."}
+                {locale === "da"
+                  ? "Prøv at navigere til en anden måned for at finde flere markeder."
+                  : "Try navigating to another month to find more markets."}
               </p>
             </div>
           )}

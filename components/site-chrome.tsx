@@ -7,6 +7,9 @@ import type { Locale, Profile } from "@/lib/types";
 
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { Button } from "@/components/ui/button";
+import { Footer } from "@/components/footer";
+
+import { Header } from "@/components/ui/header-2";
 
 export function SiteChrome({
   locale,
@@ -32,85 +35,81 @@ export function SiteChrome({
   children: React.ReactNode;
 }) {
   return (
-    <div className="px-5 md:px-8 pb-10">
-      <div className="mx-auto flex min-h-screen w-full max-w-[1200px] flex-col">
-        <header className="py-8 mb-4">
-          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-            <div className="min-w-0">
-              <Link href={`/${locale}`} className="group inline-block">
-                <div className="flex items-center gap-3">
-                  <div className="relative w-8 h-8 md:w-10 md:h-10 group-hover:scale-105 transition-transform duration-300">
-                    <Image 
-                      src="/flea-logo.png" 
-                      alt="FleaFinder Logo" 
-                      fill 
-                      className="object-contain"
-                    />
-                  </div>
-                  <span className="font-display font-bold text-[1.5rem] md:text-[2rem] leading-none tracking-[-0.02em] text-[var(--accent)] group-hover:opacity-80 transition-opacity">
-                    FLEAFINDER
-                  </span>
+    <div className="pb-10">
+      <div className="mx-auto flex min-h-screen w-full flex-col">
+        <Header
+          logo={
+            <Link href={`/${locale}`} className="group inline-block">
+              <div className="flex items-center gap-3">
+                <div className="relative w-8 h-8 md:w-10 md:h-10 group-hover:scale-105 transition-transform duration-300">
+                  <div className="w-full h-full bg-[var(--accent)]" style={{ maskImage: "url('/flea-logo.png')", WebkitMaskImage: "url('/flea-logo.png')", maskSize: "contain", WebkitMaskSize: "contain", maskRepeat: "no-repeat", WebkitMaskRepeat: "no-repeat", maskPosition: "center", WebkitMaskPosition: "center" }} />
                 </div>
-              </Link>
-            </div>
-
-            <nav className="flex flex-wrap items-center gap-3">
-              <Link href={`/${locale}/markets`} className="text-sm font-medium text-[var(--ink-soft)] hover:text-[var(--accent)] transition-colors px-2 py-1">
-                {dictionary.navigation.explore}
-              </Link>
-              
+                <span className="font-display font-bold text-[1.5rem] md:text-[2rem] leading-none tracking-[-0.02em] text-[var(--accent)] group-hover:opacity-80 transition-opacity">
+                  FLEAFINDER
+                </span>
+              </div>
+            </Link>
+          }
+          links={[
+            { label: dictionary.navigation.explore, href: `/${locale}/markets` },
+            ...(profile ? [
+              { label: dictionary.navigation.dashboard, href: `/${locale}/dashboard` },
+              ...(profile.role === "admin" ? [{ label: dictionary.navigation.admin, href: `/${locale}/admin` }] : [])
+            ] : [])
+          ]}
+          actions={
+            <div className="flex items-center gap-2">
               {profile ? (
-                <>
-                  <Link href={`/${locale}/dashboard`} className="text-sm font-medium text-[var(--ink-soft)] hover:text-[var(--accent)] transition-colors px-2 py-1">
-                    {dictionary.navigation.dashboard}
-                  </Link>
-                  {profile.role === "admin" && (
-                    <Link href={`/${locale}/admin`} className="text-sm font-medium text-[var(--ink-soft)] hover:text-[var(--accent)] transition-colors px-2 py-1">
-                      {dictionary.navigation.admin}
-                    </Link>
-                  )}
-                  <form action={signOutAction} className="inline-block">
-                    <input name="locale" type="hidden" value={locale} />
-                    <button type="submit" className="text-sm font-medium text-[var(--ink-soft)] hover:text-[var(--accent)] transition-colors px-2 py-1 cursor-pointer">
-                      {dictionary.navigation.signOut}
-                    </button>
-                  </form>
-                </>
+                <form action={signOutAction} className="inline-block">
+                  <input name="locale" type="hidden" value={locale} />
+                  <Button type="submit" variant="ghost" className="text-sm font-medium">
+                    {dictionary.navigation.signOut}
+                  </Button>
+                </form>
               ) : (
-                <Button asChild size="sm" variant="outline" className="rounded-full">
+                <Button asChild variant="ghost">
                   <Link href={`/${locale}/dashboard?series=new`}>{dictionary.navigation.addMarket}</Link>
                 </Button>
               )}
-              
               <div className="pl-2 ml-2 border-l border-[var(--line)]">
                 <Suspense
                   fallback={<div aria-hidden="true" className="h-8 w-[78px] rounded-full border border-[var(--line)] bg-[var(--surface)]" />}
                 >
-                  <LocaleSwitcher locale={locale} />
+                  <LocaleSwitcher locale={locale} id="desktop" />
                 </Suspense>
               </div>
-            </nav>
-          </div>
-        </header>
-
-        <main className="flex-1">{children}</main>
-
-        <footer className="mt-20 border-t border-[var(--line-subtle)] pt-8 pb-12">
-          <div className="flex flex-col gap-4 text-sm text-[var(--ink-muted)] md:flex-row md:items-center md:justify-between">
-            <div className="flex items-center gap-2">
-              <span className="font-display font-bold text-lg tracking-[-0.02em] text-[var(--accent)]">FLEAFINDER</span>
-              <span>&copy; {new Date().getFullYear()}</span>
             </div>
-            <div className="flex gap-6">
-              <Link className="hover:text-[var(--accent)] transition-colors" href={`/${locale}/markets`}>
-                {dictionary.navigation.explore}
-              </Link>
-              <Link className="hover:text-[var(--accent)] transition-colors" href={`/${locale}/dashboard?series=new`}>
-                {dictionary.navigation.addMarket}
-              </Link>
+          }
+          mobileActions={
+            <div className="flex flex-col gap-y-3 w-full border-t border-[var(--line-strong)] pt-6 mt-2">
+              {profile ? (
+                <form action={signOutAction} className="w-full flex justify-end">
+                  <input name="locale" type="hidden" value={locale} />
+                  <button type="submit" className="inline-flex items-center justify-end text-3xl font-display tracking-tight h-auto py-3 px-4 hover:bg-[var(--surface-elevated)] hover:text-[var(--accent)] transition-all duration-500 ease-out bg-transparent border-none text-[var(--ink)] cursor-pointer">
+                    {dictionary.navigation.signOut}
+                  </button>
+                </form>
+              ) : (
+                <Link href={`/${locale}/dashboard?series=new`} className="inline-flex items-center justify-end text-3xl font-display tracking-tight h-auto py-3 px-4 hover:bg-[var(--surface-elevated)] hover:text-[var(--accent)] transition-all duration-500 ease-out text-[var(--ink)]">
+                  {dictionary.navigation.addMarket}
+                </Link>
+              )}
+              <div className="mt-4 flex justify-end w-full px-4">
+                <Suspense
+                  fallback={<div aria-hidden="true" className="h-10 w-[100px] rounded-full border border-[var(--line)] bg-[var(--surface)]" />}
+                >
+                  <LocaleSwitcher locale={locale} id="mobile" size="lg" />
+                </Suspense>
+              </div>
             </div>
-          </div>
-        </footer>
+          }
+        />
+
+        <main className="flex-1 w-full max-w-[1200px] mx-auto px-5 md:px-8">{children}</main>
+
+        <div className="w-full max-w-[1200px] mx-auto px-5 md:px-8">
+          <Footer locale={locale} dictionary={dictionary} />
+        </div>
       </div>
     </div>
   );
