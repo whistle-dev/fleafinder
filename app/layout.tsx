@@ -37,8 +37,8 @@ export const metadata: Metadata = {
   description: APP_DESCRIPTION,
   manifest: "/manifest.webmanifest",
   icons: {
-    icon: "/icon",
-    apple: "/apple-icon"
+    icon: "/flea-logo.png",
+    apple: "/flea-logo.png"
   },
   appleWebApp: {
     title: APP_NAME,

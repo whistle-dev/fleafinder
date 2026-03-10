@@ -16,13 +16,13 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ["lifestyle", "travel", "events"],
     icons: [
       {
-        src: "/icon",
+        src: "/flea-logo.png",
         sizes: "512x512",
         type: "image/png"
       },
       {
-        src: "/apple-icon",
-        sizes: "180x180",
+        src: "/flea-logo.png",
+        sizes: "288x288",
         type: "image/png"
       }
     ]
