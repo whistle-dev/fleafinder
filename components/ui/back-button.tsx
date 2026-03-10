@@ -61,7 +61,7 @@ export function BackButton({
             aria-hidden
           />
         </i>
-        <span className="relative z-0 ml-10 transition-opacity duration-500 group-hover:opacity-0">
+        <span className="relative z-0 ml-14 transition-opacity duration-500 group-hover:opacity-0">
           {children}
         </span>
       </Link>

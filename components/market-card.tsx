@@ -24,7 +24,8 @@ export function MarketCard({
   let dateLeaf = null;
   if (nextOccurrence) {
     const d = new Date(nextOccurrence.startAt);
-    const month = d.toLocaleDateString(locale, { month: "short" });
+    let month = d.toLocaleDateString(locale, { month: "short" });
+    if (locale === "da" && month.endsWith(".")) month = month.slice(0, -1);
     const day = d.toLocaleDateString(locale, { day: "numeric" });
     dateLeaf = { month, day };
   }
@@ -60,27 +61,22 @@ export function MarketCard({
         <div className="flex justify-between items-start p-3 sm:p-4 z-20 w-full">
           {/* Left Badges */}
           <div className="flex flex-wrap gap-1.5">
-            <span className="inline-flex px-2.5 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-white text-zinc-900 shadow-sm">
+            <span className="inline-flex px-2.5 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-black/50 backdrop-blur-md text-white/95 border border-white/10">
               {CATEGORY_LABELS[market.category][locale]}
             </span>
 
             {featured && (
-              <span className="inline-flex px-2.5 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-[var(--accent)] text-zinc-900 shadow-sm">
+              <span className="inline-flex px-2.5 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-[var(--accent)]/90 backdrop-blur-md text-white border border-white/20">
                 {locale === "da" ? "Udvalgt" : "Featured"}
               </span>
             )}
           </div>
 
-          {/* Right Date Leaf */}
+          {/* Right Date Pill (same size as category pill); Danish: day before month */}
           {dateLeaf && (
-            <div className="flex flex-col items-center justify-center bg-white/95 backdrop-blur-md text-zinc-900 rounded-lg min-w-[3rem] px-2.5 py-1.5 shadow-sm shrink-0 ml-2">
-              <span className="text-[10px] font-bold uppercase tracking-widest opacity-70 leading-none mb-0.5">
-                {dateLeaf.month}
-              </span>
-              <span className="text-lg font-display font-bold leading-none">
-                {dateLeaf.day}
-              </span>
-            </div>
+            <span className="inline-flex items-center gap-1 bg-black/50 backdrop-blur-md text-white rounded-md px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-wider border border-white/10 shrink-0 ml-2">
+              {locale === "da" ? `${dateLeaf.day} ${dateLeaf.month}` : `${dateLeaf.month} ${dateLeaf.day}`}
+            </span>
           )}
         </div>
 
@@ -91,23 +87,33 @@ export function MarketCard({
               {market.title}
             </h3>
 
-            <div className="flex flex-col gap-0.5 text-[14px] drop-shadow-sm">
+            <div className="flex flex-col gap-0.5 text-[13px] drop-shadow-sm min-w-0">
               <span className="truncate text-white/95 font-medium" title={market.city}>
                 {market.city}
               </span>
               {nextOccurrence ? (
-                <span className="text-white/75 font-medium">
+                <span
+                  className="text-white/75 font-medium whitespace-nowrap overflow-hidden text-ellipsis"
+                  title={
+                    market.occurrences.length > 1
+                      ? `${formatTimeRange(nextOccurrence.startAt, nextOccurrence.endAt, locale)} · ${locale === "da" ? (market.occurrences.length - 1 === 1 ? "1 anden dato" : `${market.occurrences.length - 1} andre datoer`) : (market.occurrences.length - 1 === 1 ? "1 other date" : `${market.occurrences.length - 1} other dates`)}`
+                      : formatTimeRange(nextOccurrence.startAt, nextOccurrence.endAt, locale)
+                  }
+                >
                   {formatTimeRange(nextOccurrence.startAt, nextOccurrence.endAt, locale)}
                   {market.occurrences.length > 1 && (
-                    <span className="text-white/60 ml-1">
-                      {locale === "da"
-                        ? (market.occurrences.length - 1 === 1
-                            ? "og 1 anden dato"
-                            : `og ${market.occurrences.length - 1} andre datoer`)
-                        : (market.occurrences.length - 1 === 1
-                            ? "and 1 other date"
-                            : `and ${market.occurrences.length - 1} other dates`)}
-                    </span>
+                    <>
+                      <span className="text-white/50 mx-1" aria-hidden>·</span>
+                      <span className="text-white/60">
+                        {locale === "da"
+                          ? (market.occurrences.length - 1 === 1
+                              ? "1 anden dato"
+                              : `${market.occurrences.length - 1} andre datoer`)
+                          : (market.occurrences.length - 1 === 1
+                              ? "1 other date"
+                              : `${market.occurrences.length - 1} other dates`)}
+                      </span>
+                    </>
                   )}
                 </span>
               ) : (

@@ -20,6 +20,7 @@ type MarketMapProps = {
   locale: Locale;
   markets: MarketSeries[];
   isActive?: boolean;
+  interactiveMode?: "popup" | "external";
 };
 
 const MARKET_SOURCE_ID = "markets";
@@ -49,6 +50,7 @@ export function MarketMap({
   locale,
   markets,
   isActive = true,
+  interactiveMode = "popup",
 }: MarketMapProps) {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstanceRef = useRef<mapboxgl.Map | null>(null);
@@ -304,8 +306,27 @@ export function MarketMap({
 
       const coordinates = [...feature.geometry.coordinates] as [number, number];
 
-      popup.remove();
-      renderPopup(market, coordinates);
+      if (interactiveMode === "external") {
+        const locationLabel = [market.venueName, market.addressLine, market.city]
+          .filter(Boolean)
+          .join(", ");
+        
+        const confirmMessage = localeRef.current === "da" 
+          ? `Vil du åbne ${market.title} i Apple Maps?`
+          : `Do you want to open ${market.title} in Apple Maps?`;
+          
+        if (window.confirm(confirmMessage)) {
+          const isApple = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform || navigator.userAgent);
+          if (isApple) {
+            window.location.href = `maps://?q=${encodeURIComponent(locationLabel)}`;
+          } else {
+            window.open(`https://maps.apple.com/?q=${encodeURIComponent(locationLabel)}`, '_blank');
+          }
+        }
+      } else {
+        popup.remove();
+        renderPopup(market, coordinates);
+      }
 
       if (visibleMarketsRef.current.length > 1) {
         const targetZoom = Math.min(Math.max(map.getZoom() + 0.8, 13.2), 14.4);
