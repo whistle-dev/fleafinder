@@ -1,0 +1,3 @@
+export const MARKET_COVER_IMAGE_MAX_BYTES = 8 * 1024 * 1024;
+export const MARKET_COVER_IMAGE_MAX_LABEL = "8 MB";
+export const SERVER_ACTION_BODY_SIZE_LIMIT = "12mb";

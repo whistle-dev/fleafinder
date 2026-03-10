@@ -56,9 +56,16 @@ export default async function DashboardPage({
     const selectedMarket =
       workspace.markets.find((market) => market.slug === selectedSlug) ??
       buildMarketDraft({ organizerId: profile.id, contactEmail: profile.email });
+    const editorPath = `/${locale}/dashboard?series=${selectedSlug}`;
 
     return (
       <div className="space-y-12 max-w-3xl mx-auto py-12 md:py-20">
+        {notice ? (
+          <div className="px-6 py-4 text-center text-sm font-medium text-[var(--ink)] bg-[var(--surface-elevated)] rounded-full inline-block">
+            {notice}
+          </div>
+        ) : null}
+
         <div className="flex items-center justify-between">
           <BackButton fallbackHref={`/${locale}/dashboard`} className="text-[var(--ink-soft)] hover:text-[var(--accent)] transition-colors bg-transparent border-0 shadow-none pl-0 hover:bg-transparent -ml-2">
             {locale === "da" ? "Tilbage til oversigt" : "Back to overview"}
@@ -83,7 +90,7 @@ export default async function DashboardPage({
             dictionary={dictionary.form}
             locale={locale}
             market={selectedMarket}
-            returnTo={`/${locale}/dashboard`}
+            returnTo={editorPath}
           />
         </div>
       </div>

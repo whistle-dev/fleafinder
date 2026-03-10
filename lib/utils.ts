@@ -51,6 +51,42 @@ export function getCoverTintGradient(coverTint: string) {
   }
 }
 
+export function normalizeWebsiteUrl(value: string) {
+  const trimmed = value.trim();
+
+  if (!trimmed) {
+    return null;
+  }
+
+  const withProtocol = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+
+  try {
+    return new URL(withProtocol).toString();
+  } catch {
+    return null;
+  }
+}
+
+export function getWebsiteLabel(website?: string | null) {
+  if (!website) {
+    return "";
+  }
+
+  try {
+    return new URL(website).hostname.replace(/^www\./, "");
+  } catch {
+    return website.replace(/^https?:\/\//, "").replace(/\/$/, "");
+  }
+}
+
+export function getMarketImageSrc(imageUrl?: string | null) {
+  if (!imageUrl) {
+    return null;
+  }
+
+  return `/api/market-image?url=${encodeURIComponent(imageUrl)}`;
+}
+
 export function slugify(value: string) {
   return value
     .toLowerCase()

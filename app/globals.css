@@ -61,6 +61,28 @@
   --sidebar-accent-foreground: hsl(240 5.9% 10%);
   --sidebar-border: hsl(220 13% 91%);
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --font-display-current: var(--font-space-grotesk);
+  --font-body-current: var(--font-space-grotesk);
+}
+
+html[data-font-preview="space-grotesk"] {
+  --font-display-current: var(--font-space-grotesk);
+  --font-body-current: var(--font-space-grotesk);
+}
+
+html[data-font-preview="libre-baskerville"] {
+  --font-display-current: var(--font-libre-baskerville);
+  --font-body-current: var(--font-libre-baskerville);
+}
+
+html[data-font-preview="inter-display"] {
+  --font-display-current: var(--font-inter-display);
+  --font-body-current: var(--font-inter-display);
+}
+
+html[data-font-preview="fira-sans"] {
+  --font-display-current: var(--font-fira-sans);
+  --font-body-current: var(--font-fira-sans);
 }
 
 * {
@@ -78,7 +100,7 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   color: var(--ink);
-  font-family: var(--font-instrument), -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-body-current), -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--paper);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -88,7 +110,7 @@ body {
 
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-fraunces), Georgia, serif;
+  font-family: var(--font-display-current), Georgia, serif;
   font-weight: 400;
   letter-spacing: -0.02em;
   line-height: 1.1;
@@ -96,12 +118,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .font-display {
-  font-family: var(--font-fraunces), var(--font-dm-serif), Georgia, serif;
+  font-family: var(--font-display-current), Georgia, serif;
   font-weight: 400;
 }
 
 .font-body {
-  font-family: var(--font-instrument), -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-body-current), -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 ::selection {

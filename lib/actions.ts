@@ -9,7 +9,8 @@ import { mapboxToken } from "@/lib/supabase/config";
 import { getServerSupabaseClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/session";
 import type { Locale, MarketOccurrence, MarketSeries, SeriesPayload } from "@/lib/types";
-import { createIcsFile, ensureUniqueSlug, slugify } from "@/lib/utils";
+import { MARKET_COVER_IMAGE_MAX_BYTES, MARKET_COVER_IMAGE_MAX_LABEL } from "@/lib/uploads";
+import { createIcsFile, ensureUniqueSlug, normalizeWebsiteUrl, slugify } from "@/lib/utils";
 
 export type ActionState = {
   status: "idle" | "success" | "error";
@@ -218,8 +219,11 @@ async function buildPayload(formData: FormData, organizerId: string): Promise<Se
   const addressLine = String(formData.get("addressLine") ?? "").trim();
   const postalCode = String(formData.get("postalCode") ?? "").trim();
   const city = String(formData.get("city") ?? "København").trim();
-  const vibe = String(formData.get("vibe") ?? "").trim();
   const contactEmail = String(formData.get("contactEmail") ?? "").trim();
+  const website = normalizeWebsiteUrl(String(formData.get("website") ?? ""));
+  const coverImageMode = String(formData.get("coverImageMode") ?? "upload");
+  const coverImageUrl = normalizeWebsiteUrl(String(formData.get("coverImageUrl") ?? ""));
+  const existingCoverImageUrl = String(formData.get("existingCoverImageUrl") ?? "").trim();
   const coverTint = String(formData.get("coverTint") ?? "sand").trim();
   const occurrences = parseOccurrences(String(formData.get("occurrencesPayload") ?? ""));
   const explicitLat = Number(formData.get("latitude") ?? "");
@@ -232,7 +236,6 @@ async function buildPayload(formData: FormData, organizerId: string): Promise<Se
     description,
     category,
     language,
-    vibe,
     venueName,
     addressLine,
     postalCode,
@@ -240,8 +243,12 @@ async function buildPayload(formData: FormData, organizerId: string): Promise<Se
     latitude: geocoded?.latitude ?? (Number.isFinite(explicitLat) ? explicitLat : 55.6761),
     longitude: geocoded?.longitude ?? (Number.isFinite(explicitLng) ? explicitLng : 12.5683),
     contactEmail,
-    coverImageUrl: String(formData.get("existingCoverImageUrl") ?? "") || null,
-    tags: [category, ...vibe.split(/[,\s]+/)].filter(Boolean).slice(0, 8),
+    website,
+    coverImageUrl:
+      coverImageMode === "url"
+        ? coverImageUrl ?? (existingCoverImageUrl || null)
+        : existingCoverImageUrl || null,
+    tags: [category, city, venueName, postalCode].filter(Boolean).slice(0, 8),
     occurrences,
     coverTint
   };
@@ -250,6 +257,12 @@ async function buildPayload(formData: FormData, organizerId: string): Promise<Se
 function withNotice(path: string, notice: string) {
   const url = new URL(path, "https://fleafinder.app");
   url.searchParams.set("notice", notice);
+  return `${url.pathname}${url.search}`;
+}
+
+function withSeries(path: string, series: string) {
+  const url = new URL(path, "https://fleafinder.app");
+  url.searchParams.set("series", series);
   return `${url.pathname}${url.search}`;
 }
 
@@ -296,7 +309,6 @@ async function saveSeriesDirectly(
       language: payload.language,
       category: payload.category,
       status,
-      vibe: payload.vibe,
       venue_name: payload.venueName || null,
       address_line: payload.addressLine,
       postal_code: payload.postalCode || null,
@@ -304,6 +316,7 @@ async function saveSeriesDirectly(
       latitude: payload.latitude,
       longitude: payload.longitude,
       contact_email: payload.contactEmail,
+      website: payload.website || null,
       cover_image_url: payload.coverImageUrl,
       cover_tint: payload.coverTint ?? "sand",
       tags: payload.tags,
@@ -379,6 +392,17 @@ export async function saveMarketSeriesAction(formData: FormData) {
   const payload = await buildPayload(formData, profile.id);
   const coverImage = formData.get("coverImage");
 
+  if (coverImage instanceof File && coverImage.size > MARKET_COVER_IMAGE_MAX_BYTES) {
+    redirect(
+      withNotice(
+        returnTo,
+        locale === "da"
+          ? `Billedet skal være mindre end ${MARKET_COVER_IMAGE_MAX_LABEL}.`
+          : `Image must be smaller than ${MARKET_COVER_IMAGE_MAX_LABEL}.`
+      )
+    );
+  }
+
   if (coverImage instanceof File && coverImage.size > 0) {
     payload.coverImageUrl = await uploadCoverImage(supabase, coverImage);
   }
@@ -422,7 +446,7 @@ export async function saveMarketSeriesAction(formData: FormData) {
 
   redirect(
     withNotice(
-      `${returnTo}?series=${slug}`,
+      withSeries(returnTo, slug),
       intent === "submit" && isAdmin
         ? locale === "da"
           ? "Marked publiceret direkte."

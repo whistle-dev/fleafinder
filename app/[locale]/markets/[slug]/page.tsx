@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import { ArrowUpRight, Plus } from "lucide-react";
 import { notFound } from "next/navigation";
 
 import { CATEGORY_LABELS } from "@/lib/constants";
@@ -11,11 +9,12 @@ import {
   createIcsFile,
   formatDate,
   formatTimeRange,
-  getCoverTintGradient,
   getNextOccurrence,
+  getWebsiteLabel,
   isLocale,
 } from "@/lib/utils";
 
+import { MarketCoverImage } from "@/components/market-cover-image";
 import { MarketMap } from "@/components/market-map";
 import { BackButton } from "@/components/ui/back-button";
 import { InteractiveRow } from "@/components/ui/interactive-row";
@@ -56,6 +55,7 @@ export default async function MarketDetailPage({
   const locationLabel = [market.venueName, market.addressLine, market.city]
     .filter(Boolean)
     .join(", ");
+  const websiteLabel = getWebsiteLabel(market.website);
   const googleCalendarUrl = nextOccurrence
     ? `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
         market.title,
@@ -99,22 +99,14 @@ export default async function MarketDetailPage({
         <div className="w-full animate-fade-in stagger-3">
           <div 
             className="relative w-full aspect-[4/5] md:aspect-[21/9] rounded-[2rem] md:rounded-[3rem] overflow-hidden"
-            style={
-              !market.coverImageUrl
-                ? { background: getCoverTintGradient(market.coverTint) }
-                : undefined
-            }
           >
-            {market.coverImageUrl && (
-              <Image
-                src={market.coverImageUrl}
-                alt={market.title}
-                fill
-                unoptimized
-                priority
-                className="object-cover"
-              />
-            )}
+            <MarketCoverImage
+              title={market.title}
+              coverImageUrl={market.coverImageUrl}
+              coverTint={market.coverTint}
+              priority
+              imageClassName="object-cover"
+            />
             
             {/* Subtle grain overlay for texture */}
             <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}></div>
@@ -182,6 +174,28 @@ export default async function MarketDetailPage({
               </p>
             </div>
           </InteractiveRow>
+
+          {market.website ? (
+            <InteractiveRow
+              href={market.website}
+              target="_blank"
+              rel="noreferrer"
+              icon="arrow"
+              label={locale === "da" ? "Besøg website" : "Visit website"}
+              ariaLabel={locale === "da" ? "Besøg markedets website" : "Visit market website"}
+              className="py-8 md:py-12 border-t border-[var(--line-strong)]"
+              iconAlign="top"
+            >
+              <div className="min-w-0 pr-6">
+                <h2 className="text-xs md:text-sm font-bold uppercase tracking-[0.2em] text-[var(--ink-muted)] mb-4 md:mb-6">
+                  {dictionary.detail.website}
+                </h2>
+                <p className="text-base sm:text-xl md:text-4xl text-[var(--ink)] group-hover:text-[var(--accent)] transition-colors break-all min-w-0">
+                  {websiteLabel}
+                </p>
+              </div>
+            </InteractiveRow>
+          ) : null}
 
           {/* Interactive Dates */}
           <div className="py-8 md:py-12 border-t border-[var(--line-strong)]">

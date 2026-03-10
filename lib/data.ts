@@ -32,7 +32,6 @@ function mapRowToSeries(row: Record<string, unknown>, occurrences: MarketOccurre
     language: (row.language as MarketSeries["language"]) ?? "da",
     category: (row.category as MarketSeries["category"]) ?? "mixed",
     status: (row.status as MarketSeries["status"]) ?? "draft",
-    vibe: String(row.vibe ?? ""),
     featured: Boolean(row.featured),
     venueName: (row.venue_name as string | null) ?? null,
     addressLine: String(row.address_line ?? ""),
@@ -41,6 +40,7 @@ function mapRowToSeries(row: Record<string, unknown>, occurrences: MarketOccurre
     latitude: Number(row.latitude ?? 55.6761),
     longitude: Number(row.longitude ?? 12.5683),
     contactEmail: String(row.contact_email ?? ""),
+    website: (row.website as string | null) ?? null,
     coverImageUrl: (row.cover_image_url as string | null) ?? null,
     coverTint: String(row.cover_tint ?? "sand"),
     createdAt: String(row.created_at),
@@ -64,7 +64,7 @@ function filterMarkets(markets: MarketSeries[], filters: ExplorerFilters) {
       return false;
     }
 
-    const searchable = [market.title, market.description, market.addressLine, market.city, market.vibe, ...market.tags]
+    const searchable = [market.title, market.description, market.addressLine, market.city, market.website, ...market.tags]
       .join(" ")
       .toLowerCase();
 
@@ -365,7 +365,7 @@ export async function getExistingSlugs() {
     return sampleMarkets;
   }
 
-  const { data } = await supabase.from("market_series").select("id, organizer_id, slug, title, description, language, category, status, vibe, featured, venue_name, address_line, postal_code, city, latitude, longitude, contact_email, cover_image_url, cover_tint, created_at, updated_at, published_at, tags");
+  const { data } = await supabase.from("market_series").select("id, organizer_id, slug, title, description, language, category, status, featured, venue_name, address_line, postal_code, city, latitude, longitude, contact_email, website, cover_image_url, cover_tint, created_at, updated_at, published_at, tags");
 
   return (data ?? []).map((row) => mapRowToSeries(row, []));
 }
@@ -384,7 +384,6 @@ export function buildMarketDraft(overrides?: Partial<MarketSeries>): MarketSerie
     description: overrides?.description ?? "",
     category: overrides?.category ?? "mixed",
     status: overrides?.status ?? "draft",
-    vibe: overrides?.vibe ?? "",
     venueName: overrides?.venueName ?? "",
     addressLine: overrides?.addressLine ?? "",
     postalCode: overrides?.postalCode ?? "",
@@ -392,6 +391,7 @@ export function buildMarketDraft(overrides?: Partial<MarketSeries>): MarketSerie
     latitude: overrides?.latitude ?? 55.6761,
     longitude: overrides?.longitude ?? 12.5683,
     contactEmail: overrides?.contactEmail ?? "",
+    website: overrides?.website ?? "",
     coverImageUrl: overrides?.coverImageUrl ?? null,
     coverTint: overrides?.coverTint ?? "sand",
     createdAt: overrides?.createdAt ?? new Date().toISOString(),

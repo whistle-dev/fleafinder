@@ -1,14 +1,17 @@
 "use client";
 
-import { useId, useState } from "react";
+import type { ChangeEvent } from "react";
+import { useEffect, useState } from "react";
 import { format, parseISO } from "date-fns";
 import { da as daLocale, enUS as enLocale } from "date-fns/locale";
 import { CalendarIcon, Plus, Trash2 } from "lucide-react";
 
 import { CATEGORY_LABELS } from "@/lib/constants";
+import { compressImageFile } from "@/lib/image-compression";
 import { marketCategories } from "@/lib/types";
 import type { Locale, MarketSeries } from "@/lib/types";
-import { formatDate, formatTimeRange } from "@/lib/utils";
+import { MARKET_COVER_IMAGE_MAX_BYTES, MARKET_COVER_IMAGE_MAX_LABEL } from "@/lib/uploads";
+import { formatDate, formatTimeRange, getMarketImageSrc, normalizeWebsiteUrl } from "@/lib/utils";
 import { cn } from "@/lib/cn";
 
 import { SubmitButton } from "@/components/submit-button";
@@ -19,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 type DateInput = {
   id: string;
@@ -26,6 +30,13 @@ type DateInput = {
   startTime: string;
   endTime: string;
 };
+
+type CoverImageMode = "upload" | "url";
+
+function formatFileSize(size: number) {
+  const megabytes = size / (1024 * 1024);
+  return `${megabytes.toFixed(megabytes >= 10 ? 0 : 1)} MB`;
+}
 
 function buildOccurrencesFromInputs(inputs: DateInput[]) {
   return inputs
@@ -91,8 +102,9 @@ export function MarketForm({
     addressLine: string;
     postalCode: string;
     city: string;
-    vibe: string;
+    website: string;
     image: string;
+    imageUrl: string;
     startDate: string;
     startTime: string;
     endTime: string;
@@ -123,13 +135,43 @@ export function MarketForm({
       ];
 
   const [dateInputs, setDateInputs] = useState<DateInput[]>(initialInputs);
-  const [title, setTitle] = useState(market.title);
-  const [vibe, setVibe] = useState(market.vibe);
   const [category, setCategory] = useState(market.category);
   const [language, setLanguage] = useState(market.language);
+  const [coverImageUrlValue, setCoverImageUrlValue] = useState(market.coverImageUrl ?? "");
+  const [coverImageError, setCoverImageError] = useState<string | null>(null);
+  const [coverImageNotice, setCoverImageNotice] = useState<string | null>(null);
+  const [localCoverImagePreviewUrl, setLocalCoverImagePreviewUrl] = useState<string | null>(null);
+  const [selectedCoverImageName, setSelectedCoverImageName] = useState<string | null>(null);
+  const [isCompressingCoverImage, setIsCompressingCoverImage] = useState(false);
+  const [coverImageMode, setCoverImageMode] = useState<CoverImageMode>(
+    market.coverImageUrl ? "url" : "upload"
+  );
   
   const occurrences = buildOccurrencesFromInputs(dateInputs);
   const dateFnsLocale = locale === "da" ? daLocale : enLocale;
+  const normalizedCoverImageUrl = normalizeWebsiteUrl(coverImageUrlValue);
+  const savedCoverImagePreviewUrl = market.coverImageUrl ? getMarketImageSrc(market.coverImageUrl) : null;
+  const uploadPreviewUrl = localCoverImagePreviewUrl ?? savedCoverImagePreviewUrl;
+  const urlPreviewUrl = normalizedCoverImageUrl ? getMarketImageSrc(normalizedCoverImageUrl) : savedCoverImagePreviewUrl;
+
+  useEffect(() => {
+    return () => {
+      if (localCoverImagePreviewUrl) {
+        URL.revokeObjectURL(localCoverImagePreviewUrl);
+      }
+    };
+  }, [localCoverImagePreviewUrl]);
+
+  const updateLocalCoverImagePreview = (file: File | null) => {
+    setLocalCoverImagePreviewUrl((current) => {
+      if (current) {
+        URL.revokeObjectURL(current);
+      }
+
+      return file ? URL.createObjectURL(file) : null;
+    });
+    setSelectedCoverImageName(file?.name ?? null);
+  };
 
   const updateDateInput = (id: string, field: keyof DateInput, value: any) => {
     setDateInputs((current) =>
@@ -154,14 +196,76 @@ export function MarketForm({
     setDateInputs((current) => current.filter((input) => input.id !== id));
   };
 
+  const handleCoverImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const input = event.currentTarget;
+    const file = input.files?.[0];
+
+    if (!file) {
+      setCoverImageError(null);
+      setCoverImageNotice(null);
+      updateLocalCoverImagePreview(null);
+      return;
+    }
+
+    setCoverImageError(null);
+    setCoverImageNotice(null);
+
+    if (file.size <= MARKET_COVER_IMAGE_MAX_BYTES) {
+      updateLocalCoverImagePreview(file);
+      return;
+    }
+
+    void (async () => {
+      setIsCompressingCoverImage(true);
+      setCoverImageNotice(
+        locale === "da"
+          ? "Komprimerer billedet automatisk..."
+          : "Compressing image automatically..."
+      );
+
+      try {
+        const compressed = await compressImageFile(file, MARKET_COVER_IMAGE_MAX_BYTES);
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(compressed.file);
+        input.files = dataTransfer.files;
+        updateLocalCoverImagePreview(compressed.file);
+        setCoverImageNotice(
+          locale === "da"
+            ? `Billedet blev komprimeret til ${formatFileSize(compressed.file.size)}.`
+            : `Image compressed to ${formatFileSize(compressed.file.size)}.`
+        );
+      } catch {
+        input.value = "";
+        setCoverImageNotice(null);
+        updateLocalCoverImagePreview(null);
+        setCoverImageError(
+          locale === "da"
+            ? `Vi kunne ikke komprimere billedet nok. Vælg en fil under ${MARKET_COVER_IMAGE_MAX_LABEL}.`
+            : `We could not compress the image enough. Choose a file under ${MARKET_COVER_IMAGE_MAX_LABEL}.`
+        );
+      } finally {
+        setIsCompressingCoverImage(false);
+      }
+    })();
+  };
+
   const isPublished = market.status === "published";
 
   return (
-    <form action={action} className="mt-4 md:mt-8 pb-32">
+    <form
+      action={action}
+      className="mt-4 md:mt-8 pb-32"
+      onSubmit={(event) => {
+        if (isCompressingCoverImage) {
+          event.preventDefault();
+        }
+      }}
+    >
       <input name="locale" type="hidden" value={locale} />
       <input name="returnTo" type="hidden" value={returnTo} />
       <input name="seriesId" type="hidden" value={market.id} />
       <input name="existingCoverImageUrl" type="hidden" value={market.coverImageUrl ?? ""} />
+      <input name="coverImageMode" type="hidden" value={coverImageMode} />
       <input name="latitude" type="hidden" value={market.latitude} />
       <input name="longitude" type="hidden" value={market.longitude} />
       <input name="occurrencesPayload" type="hidden" value={JSON.stringify(occurrences)} />
@@ -183,7 +287,6 @@ export function MarketForm({
                 defaultValue={market.title}
                 id="market-title"
                 name="title"
-                onChange={(event) => setTitle(event.target.value)}
                 required
                 type="text"
                 className="text-xl md:text-2xl py-6 md:py-8 bg-transparent border-0 border-b border-[var(--line-strong)] rounded-none focus-visible:ring-0 focus-visible:border-[var(--accent)] px-0"
@@ -233,19 +336,6 @@ export function MarketForm({
               </Select>
             </div>
 
-            <div className="space-y-3 md:col-span-2">
-              <Label htmlFor="market-vibe" className="text-base text-[var(--ink)]">{dictionary.vibe}</Label>
-              <Input
-                defaultValue={market.vibe}
-                id="market-vibe"
-                name="vibe"
-                onChange={(event) => setVibe(event.target.value)}
-                placeholder={locale === "da" ? "Skolegård, kaffe og vintagefund" : "School yard, coffee, and vintage finds"}
-                required
-                type="text"
-                className="h-14 bg-[var(--surface)] border-[var(--line-strong)] rounded-xl px-4 text-base focus-visible:border-[var(--accent)] focus-visible:ring-0"
-              />
-            </div>
           </div>
         </FormSection>
 
@@ -279,6 +369,18 @@ export function MarketForm({
                 required 
                 type="email"
                 className="h-14 bg-[var(--surface)] border-[var(--line-strong)] rounded-xl px-4 text-base focus-visible:border-[var(--accent)] focus-visible:ring-0" 
+              />
+            </div>
+
+            <div className="space-y-3 md:col-span-2">
+              <Label htmlFor="market-website" className="text-base text-[var(--ink)]">{dictionary.website}</Label>
+              <Input
+                defaultValue={market.website ?? ""}
+                id="market-website"
+                name="website"
+                type="url"
+                placeholder={locale === "da" ? "https://ditmarked.dk" : "https://yourmarket.com"}
+                className="h-14 bg-[var(--surface)] border-[var(--line-strong)] rounded-xl px-4 text-base focus-visible:border-[var(--accent)] focus-visible:ring-0"
               />
             </div>
 
@@ -420,19 +522,143 @@ export function MarketForm({
               </Button>
             </div>
 
-            <div className="pt-10 mt-10 border-t border-[var(--line-subtle)] space-y-3">
-              <Label htmlFor="market-cover-image" className="text-base text-[var(--ink)]">
-                {dictionary.image}
-              </Label>
-              <div className="max-w-md">
-                <Input 
-                  accept="image/*" 
-                  id="market-cover-image" 
-                  name="coverImage" 
-                  type="file"
-                  className="bg-[var(--surface)] border-[var(--line-strong)] text-[var(--ink)] file:bg-[var(--accent)] file:text-[var(--paper)] file:border-0 file:mr-4 file:py-2 file:px-4 file:rounded-full file:text-sm file:font-medium hover:file:bg-[var(--accent-dark)] file:cursor-pointer cursor-pointer rounded-xl h-auto py-2" 
-                />
+            <div className="pt-10 mt-10 border-t border-[var(--line-subtle)] space-y-4">
+              <div className="space-y-3">
+                <Label className="text-base text-[var(--ink)]">{dictionary.image}</Label>
+                <ToggleGroup
+                  type="single"
+                  value={coverImageMode}
+                  onValueChange={(value) => {
+                    if (!value) return;
+                    setCoverImageMode(value as CoverImageMode);
+                    setCoverImageError(null);
+                    setCoverImageNotice(null);
+                  }}
+                  variant="outline"
+                  className="inline-flex rounded-xl border border-[var(--line-strong)] bg-[var(--surface)] p-1"
+                >
+                  <ToggleGroupItem
+                    value="upload"
+                    className="rounded-lg px-4 text-sm data-[state=on]:bg-[var(--accent)] data-[state=on]:text-[var(--paper)]"
+                  >
+                    {locale === "da" ? "Upload fil" : "Upload file"}
+                  </ToggleGroupItem>
+                  <ToggleGroupItem
+                    value="url"
+                    className="rounded-lg px-4 text-sm data-[state=on]:bg-[var(--accent)] data-[state=on]:text-[var(--paper)]"
+                  >
+                    {locale === "da" ? "Brug URL" : "Use URL"}
+                  </ToggleGroupItem>
+                </ToggleGroup>
               </div>
+
+              {coverImageMode === "url" ? (
+                <div className="space-y-3">
+                  <Label htmlFor="market-cover-image-url" className="text-base text-[var(--ink)]">{dictionary.imageUrl}</Label>
+                  <Input
+                    id="market-cover-image-url"
+                    name="coverImageUrl"
+                    type="url"
+                    value={coverImageUrlValue}
+                    onChange={(event) => setCoverImageUrlValue(event.target.value)}
+                    placeholder={locale === "da" ? "https://ditmarked.dk/billede.jpg" : "https://yourmarket.com/image.jpg"}
+                    className="h-14 bg-[var(--surface)] border-[var(--line-strong)] rounded-xl px-4 text-base focus-visible:border-[var(--accent)] focus-visible:ring-0"
+                  />
+                  <p className="text-sm text-[var(--ink-muted)]">
+                    {locale === "da"
+                      ? "Brug et direkte link til billedet, helst fra markedets egen hjemmeside eller et sted du kontrollerer."
+                      : "Use a direct image URL, ideally from the market website or a host you control."}
+                  </p>
+                  <div className="overflow-hidden rounded-2xl border border-[var(--line-strong)] bg-[var(--surface)]">
+                    {urlPreviewUrl ? (
+                      <img
+                        src={urlPreviewUrl}
+                        alt={locale === "da" ? "Preview af coverbillede" : "Cover image preview"}
+                        className="aspect-[16/9] w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex aspect-[16/9] items-center justify-center px-6 text-center text-sm text-[var(--ink-muted)]">
+                        {locale === "da"
+                          ? "Indsæt en gyldig billed-URL for at se preview."
+                          : "Paste a valid image URL to preview it."}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : null}
+
+              {coverImageMode === "upload" ? (
+                <div className="space-y-3">
+                  <Label htmlFor="market-cover-image" className="text-base text-[var(--ink)]">
+                    {dictionary.image}
+                  </Label>
+                  <input 
+                    accept="image/*" 
+                    id="market-cover-image" 
+                    name="coverImage" 
+                    type="file"
+                    onChange={handleCoverImageChange}
+                    aria-invalid={coverImageError ? true : undefined}
+                    className="sr-only" 
+                  />
+                  <div className="grid gap-4 md:grid-cols-[220px_1fr]">
+                    <label
+                      htmlFor="market-cover-image"
+                      className="flex min-h-[220px] cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--line-strong)] bg-[var(--surface)] px-5 text-center transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                    >
+                      <span className="text-sm uppercase tracking-[0.22em] text-[var(--ink-muted)]">
+                        {locale === "da" ? "Fil" : "File"}
+                      </span>
+                      <span className="mt-3 font-display text-2xl leading-none text-[var(--ink)]">
+                        {selectedCoverImageName
+                          ? locale === "da"
+                            ? "Vælg et andet billede"
+                            : "Choose another image"
+                          : locale === "da"
+                            ? "Vælg billede"
+                            : "Choose image"}
+                      </span>
+                      <span className="mt-3 text-sm text-[var(--ink-muted)]">
+                        {selectedCoverImageName ??
+                          (locale === "da"
+                            ? "JPG, PNG eller WebP"
+                            : "JPG, PNG, or WebP")}
+                      </span>
+                    </label>
+                    <div className="overflow-hidden rounded-2xl border border-[var(--line-strong)] bg-[var(--surface)]">
+                      {uploadPreviewUrl ? (
+                        <img
+                          src={uploadPreviewUrl}
+                          alt={locale === "da" ? "Preview af uploadet billede" : "Uploaded image preview"}
+                          className="aspect-[16/9] w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex aspect-[16/9] items-center justify-center px-6 text-center text-sm text-[var(--ink-muted)]">
+                          {locale === "da"
+                            ? "Når du vælger et billede, vises det her i stedet for et filnavn."
+                            : "When you choose an image, it will appear here instead of a file name."}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <p
+                    className={cn(
+                      "text-sm",
+                      coverImageError
+                        ? "text-[var(--terracotta)]"
+                        : coverImageNotice
+                          ? "text-[var(--accent)]"
+                          : "text-[var(--ink-muted)]"
+                    )}
+                  >
+                    {coverImageError ??
+                      coverImageNotice ??
+                      (locale === "da"
+                        ? `Upload et billede op til ${MARKET_COVER_IMAGE_MAX_LABEL}. Større filer komprimeres automatisk før upload.`
+                        : `Upload an image up to ${MARKET_COVER_IMAGE_MAX_LABEL}. Larger files are compressed automatically before upload.`)}
+                  </p>
+                </div>
+              ) : null}
             </div>
           </div>
         </FormSection>
@@ -452,6 +678,7 @@ export function MarketForm({
             {!isPublished && (
               <SubmitButton 
                 className="flex-1 md:flex-none h-12 md:h-14 px-6 rounded-xl border-[var(--line-strong)] text-[var(--ink)] hover:text-[var(--accent)] hover:border-[var(--accent)] bg-transparent font-medium" 
+                disabled={isCompressingCoverImage}
                 name="intent" 
                 value="draft" 
                 variant="outline"
@@ -461,11 +688,18 @@ export function MarketForm({
             )}
             <SubmitButton 
               className="flex-1 md:flex-none h-12 md:h-14 px-8 rounded-xl bg-[var(--accent)] text-[var(--paper)] hover:bg-[var(--accent-dark)] font-medium text-lg shadow-sm" 
+              disabled={isCompressingCoverImage}
               name="intent" 
               value={isPublished ? "publish" : "submit"} 
               variant="default"
             >
-              {isPublished ? (locale === "da" ? "Gem ændringer" : "Save changes") : dictionary.submit}
+              {isCompressingCoverImage
+                ? locale === "da"
+                  ? "Komprimerer..."
+                  : "Compressing..."
+                : isPublished
+                  ? (locale === "da" ? "Gem ændringer" : "Save changes")
+                  : dictionary.submit}
             </SubmitButton>
           </div>
         </div>

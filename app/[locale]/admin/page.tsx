@@ -158,8 +158,8 @@ export default async function AdminPage({
                                   <div className="text-sm font-medium">{market.contactEmail}</div>
                                 </div>
                                 <div>
-                                  <div className="text-xs uppercase tracking-widest text-[var(--ink-muted)]">Vibe</div>
-                                  <div className="text-sm font-medium">{market.vibe}</div>
+                                  <div className="text-xs uppercase tracking-widest text-[var(--ink-muted)]">Website</div>
+                                  <div className="text-sm font-medium break-all">{market.website || "-"}</div>
                                 </div>
                               </div>
 

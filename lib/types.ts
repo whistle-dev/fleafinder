@@ -45,7 +45,6 @@ export type MarketSeries = {
   language: Locale;
   category: MarketCategory;
   status: ListingStatus;
-  vibe: string;
   featured: boolean;
   venueName?: string | null;
   addressLine: string;
@@ -54,6 +53,7 @@ export type MarketSeries = {
   latitude: number;
   longitude: number;
   contactEmail: string;
+  website?: string | null;
   coverImageUrl?: string | null;
   coverTint: string;
   createdAt: string;

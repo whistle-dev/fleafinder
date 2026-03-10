@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
@@ -6,9 +5,9 @@ import { CATEGORY_LABELS } from "@/lib/constants";
 import type { Locale, MarketSeries } from "@/lib/types";
 import {
   formatTimeRange,
-  getCoverTintGradient,
   getNextOccurrence,
 } from "@/lib/utils";
+import { MarketCoverImage } from "@/components/market-cover-image";
 
 export function MarketCard({
   locale,
@@ -37,23 +36,12 @@ export function MarketCard({
       className="group block h-[340px] sm:h-[320px] outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] rounded-2xl"
     >
       <article className="relative h-full flex flex-col w-full overflow-hidden rounded-2xl transition-transform duration-500 ease-out sm:hover:shadow-xl sm:hover:-translate-y-1 isolate">
-        
-        {/* Background Base (If no image) */}
-        <div 
-          className="absolute inset-0 z-0"
-          style={!market.coverImageUrl ? { background: getCoverTintGradient(market.coverTint) } : { background: 'var(--surface-elevated)' }}
+        <MarketCoverImage
+          title={market.title}
+          coverImageUrl={market.coverImageUrl}
+          coverTint={market.coverTint}
+          imageClassName="absolute inset-0 z-0 object-cover transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] sm:group-hover:scale-105"
         />
-
-        {/* Image */}
-        {market.coverImageUrl && (
-          <Image
-            src={market.coverImageUrl}
-            alt={market.title}
-            fill
-            unoptimized
-            className="absolute inset-0 z-0 object-cover transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] sm:group-hover:scale-105"
-          />
-        )}
         
         {/* Dark tint only at bottom for text contrast */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent z-10 pointer-events-none" />
