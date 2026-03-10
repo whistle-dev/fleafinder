@@ -393,21 +393,14 @@ export async function saveMarketSeriesAction(formData: FormData) {
 
   const isAdmin = profile.role === "admin";
 
-  if (existingSeries?.status === "published" && isAdmin) {
+  if (existingSeries?.status === "published") {
     const slug = await saveSeriesDirectly(supabase, existingSeries.organizer_id, existingSeries.id, payload, "published");
     revalidatePath(`/${locale}`);
     revalidatePath(`/${locale}/markets`);
     revalidatePath(`/${locale}/markets/${slug}`);
     revalidatePath(returnTo);
     revalidatePath(`/${locale}/admin`);
-    redirect(withNotice(returnTo, locale === "da" ? "Marked opdateret og stadig live." : "Market updated and kept live."));
-  }
-
-  if (existingSeries?.status === "published") {
-    await saveRevision(supabase, existingSeries.id, profile.id, payload);
-    revalidatePath(`/${locale}/admin`);
-    revalidatePath(returnTo);
-    redirect(withNotice(returnTo, locale === "da" ? "Ændringer sendt til godkendelse." : "Changes submitted for review."));
+    redirect(withNotice(returnTo, locale === "da" ? "Marked opdateret og er live." : "Market updated and is live."));
   }
 
   const nextStatus =

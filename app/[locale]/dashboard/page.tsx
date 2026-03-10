@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, CalendarDays, Edit2, Plus, Clock, CheckCircle2, ChevronRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Plus } from "lucide-react";
 import { redirect } from "next/navigation";
 
 import { saveMarketSeriesAction } from "@/lib/actions";
@@ -11,9 +11,8 @@ import { formatDate, getNextOccurrence, isLocale } from "@/lib/utils";
 
 import { MarketForm } from "@/components/market-form";
 import { StatusPill } from "@/components/status-pill";
-import { Badge } from "@/components/ui/badge";
+import { BackButton } from "@/components/ui/back-button";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export default async function DashboardPage({
   params,
@@ -35,12 +34,15 @@ export default async function DashboardPage({
     }
 
     return (
-      <div className="mx-auto max-w-2xl text-center py-20">
-        <h1 className="font-display text-4xl text-[var(--ink)] mb-4">{dictionary.dashboard.title}</h1>
-        <p className="text-[var(--ink-soft)] mb-8">{dictionary.dashboard.noSession}</p>
-        <Button asChild size="lg">
-          <Link href={`/${locale}/sign-in`}>{dictionary.navigation.signIn}</Link>
-        </Button>
+      <div className="mx-auto max-w-2xl text-center py-32 px-4">
+        <h1 className="font-display text-5xl md:text-6xl text-[var(--ink)] mb-6 tracking-tight leading-none">{dictionary.dashboard.title}</h1>
+        <p className="text-xl text-[var(--ink-muted)] mb-10 max-w-md mx-auto">{dictionary.dashboard.noSession}</p>
+        <Link 
+          href={`/${locale}/sign-in`}
+          className="inline-flex items-center justify-center h-14 px-8 rounded-full bg-[var(--accent)] text-[var(--paper)] hover:bg-[var(--accent-dark)] transition-colors font-medium text-lg"
+        >
+          {dictionary.navigation.signIn}
+        </Link>
       </div>
     );
   }
@@ -56,35 +58,34 @@ export default async function DashboardPage({
       buildMarketDraft({ organizerId: profile.id, contactEmail: profile.email });
 
     return (
-      <div className="space-y-6 max-w-5xl mx-auto">
+      <div className="space-y-12 max-w-3xl mx-auto py-12 md:py-20">
         <div className="flex items-center justify-between">
-          <Button asChild variant="ghost" className="-ml-4">
-            <Link href={`/${locale}/dashboard`}>
-              <ArrowLeft className="size-4" />
-              {locale === "da" ? "Tilbage til oversigt" : "Back to overview"}
-            </Link>
-          </Button>
+          <BackButton fallbackHref={`/${locale}/dashboard`} className="text-[var(--ink-soft)] hover:text-[var(--accent)] transition-colors bg-transparent border-0 shadow-none pl-0 hover:bg-transparent -ml-2">
+            {locale === "da" ? "Tilbage til oversigt" : "Back to overview"}
+          </BackButton>
           <StatusPill locale={locale} status={selectedMarket.status} />
         </div>
         
-        <div className="space-y-2">
-          <h1 className="font-display text-3xl text-[var(--ink)]">
+        <div className="space-y-4">
+          <h1 className="font-display text-5xl md:text-7xl text-[var(--ink)] tracking-tight leading-none">
             {selectedMarket.title || dictionary.dashboard.newMarket}
           </h1>
-          <p className="text-[var(--ink-soft)]">
+          <p className="text-xl text-[var(--ink-muted)]">
             {locale === "da" 
               ? "Udfyld detaljerne for dit marked nedenfor." 
               : "Fill in the details for your market below."}
           </p>
         </div>
 
-        <MarketForm
-          action={saveMarketSeriesAction}
-          dictionary={dictionary.form}
-          locale={locale}
-          market={selectedMarket}
-          returnTo={`/${locale}/dashboard`}
-        />
+        <div className="pt-8 border-t border-[var(--line-subtle)]">
+          <MarketForm
+            action={saveMarketSeriesAction}
+            dictionary={dictionary.form}
+            locale={locale}
+            market={selectedMarket}
+            returnTo={`/${locale}/dashboard`}
+          />
+        </div>
       </div>
     );
   }
@@ -93,182 +94,156 @@ export default async function DashboardPage({
   const pendingCount = workspace.markets.filter((market) => market.status === "pending_review").length;
 
   return (
-    <div className="space-y-12 max-w-6xl mx-auto">
-      {/* Header and Stats Combined */}
-      <header className="space-y-8">
-        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-          <div className="space-y-2">
-            <Badge variant="subtle" className="font-mono mb-2">{profile.email}</Badge>
-            <h1 className="font-display text-4xl text-[var(--ink)] tracking-tight">
-              {dictionary.dashboard.title}
-            </h1>
-            <p className="text-lg text-[var(--ink-soft)] max-w-xl">
-              {locale === "da" ? "Administrer dine markeder og hold styr på ændringer." : "Manage your markets and keep track of changes."}
-            </p>
-          </div>
-          <Button asChild size="lg" className="shrink-0 mt-2 md:mt-0">
-            <Link href={`/${locale}/dashboard?series=new`}>
-              <Plus className="size-5" />
-              {dictionary.dashboard.newMarket}
-            </Link>
-          </Button>
-        </div>
-        
-        {/* Streamlined Stats Overview */}
-        <div className="flex flex-wrap items-center gap-x-12 gap-y-4 py-6 border-y border-[var(--line-subtle)]">
-          <div className="flex flex-wrap items-center gap-x-12 gap-y-4 py-6 border-y border-[var(--line-subtle)]">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center justify-center size-12 rounded-full bg-[var(--accent-soft)] text-[var(--accent)]">
-              <CalendarDays className="size-5" />
-            </div>
-            <div>
-              <div className="text-sm font-medium uppercase tracking-wider text-[var(--ink-muted)]">{locale === "da" ? "Totalt" : "Total"}</div>
-              <div className="font-display text-2xl text-[var(--ink)]">{workspace.markets.length}</div>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-4">
-            <div className="flex items-center justify-center size-12 rounded-full bg-emerald-500/20 text-emerald-300">
-              <CheckCircle2 className="size-5" />
-            </div>
-            <div>
-              <div className="text-sm font-medium uppercase tracking-wider text-[var(--ink-muted)]">{locale === "da" ? "Live" : "Live"}</div>
-              <div className="font-display text-2xl text-[var(--ink)]">{publishedCount}</div>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-4">
-            <div className="flex items-center justify-center size-12 rounded-full bg-amber-500/20 text-amber-300">
-              <Clock className="size-5" />
-            </div>
-            <div>
-              <div className="text-sm font-medium uppercase tracking-wider text-[var(--ink-muted)]">{locale === "da" ? "Afventer" : "Pending"}</div>
-              <div className="font-display text-2xl text-[var(--ink)]">{pendingCount}</div>
-            </div>
-          </div>
-        </div>
-        </div>
-      </header>
-
+    <div className="max-w-5xl mx-auto py-12 md:py-20 px-4 space-y-24">
       {notice ? (
-        <div className="rounded-xl border border-[var(--terracotta-soft)] bg-[var(--terracotta-soft)] px-5 py-4 text-sm font-medium text-[var(--terracotta)]">
+        <div className="px-6 py-4 text-center text-sm font-medium text-[var(--ink)] bg-[var(--surface-elevated)] rounded-full inline-block mx-auto">
           {notice}
         </div>
       ) : null}
 
-      <div className="grid gap-12 xl:grid-cols-[1fr_340px]">
-        {/* Markets Table */}
-        <section className="space-y-6">
-          <div className="flex items-center justify-between border-b border-[var(--line)] pb-4">
-            <h2 className="font-display text-2xl text-[var(--ink)]">
-              {dictionary.dashboard.yourMarkets}
-            </h2>
+      {/* Editorial Header */}
+      <header className="space-y-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+          <div className="space-y-6">
+            <div className="inline-flex items-center px-3 py-1 rounded-full border border-[var(--line-strong)] text-[var(--accent)] text-sm font-mono tracking-wider">
+              {profile.email}
+            </div>
+            <h1 className="font-display text-6xl md:text-8xl text-[var(--ink)] tracking-tight leading-none">
+              {dictionary.dashboard.title}
+            </h1>
           </div>
+          
+          <div className="flex flex-col sm:flex-row gap-4 shrink-0">
+            {profile.role === "admin" && (
+              <Link 
+                href={`/${locale}/admin`}
+                className="inline-flex items-center justify-center h-14 px-8 rounded-full border border-[var(--line-strong)] text-[var(--ink)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all font-medium"
+              >
+                {dictionary.navigation.admin}
+              </Link>
+            )}
+            <Link 
+              href={`/${locale}/dashboard?series=new`}
+              className="inline-flex items-center justify-center h-14 px-8 rounded-full bg-[var(--accent)] text-[var(--paper)] hover:bg-[var(--accent-dark)] transition-colors font-medium"
+            >
+              <Plus className="size-5 mr-2" />
+              {dictionary.dashboard.newMarket}
+            </Link>
+          </div>
+        </div>
+        
+        {/* Clean typographic stats */}
+        <div className="flex gap-12 md:gap-24 pt-10 border-t border-[var(--line-subtle)]">
+          <div className="space-y-1">
+            <p className="text-[var(--ink-muted)] text-sm uppercase tracking-widest">{locale === "da" ? "Totalt" : "Total"}</p>
+            <p className="font-display text-4xl md:text-5xl text-[var(--ink)]">{workspace.markets.length}</p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-[var(--ink-muted)] text-sm uppercase tracking-widest">{locale === "da" ? "Live" : "Live"}</p>
+            <p className="font-display text-4xl md:text-5xl text-[var(--ink)]">{publishedCount}</p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-[var(--ink-muted)] text-sm uppercase tracking-widest">{locale === "da" ? "Afventer" : "Pending"}</p>
+            <p className="font-display text-4xl md:text-5xl text-[var(--ink)]">{pendingCount}</p>
+          </div>
+        </div>
+      </header>
+
+      <div className="grid lg:grid-cols-[1fr_300px] gap-16 lg:gap-24">
+        {/* Markets List - Editorial Style */}
+        <section>
+          <h2 className="font-display text-4xl text-[var(--ink)] mb-8">
+            {dictionary.dashboard.yourMarkets}
+          </h2>
 
           {workspace.markets.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-[var(--line-strong)] bg-[var(--surface)] px-6 py-12 text-center">
-              <p className="text-[var(--ink-soft)] mb-4">{dictionary.dashboard.noMarkets}</p>
-              <Button asChild variant="outline">
-                <Link href={`/${locale}/dashboard?series=new`}>
-                  <Plus className="size-4" />
-                  {dictionary.dashboard.newMarket}
-                </Link>
-              </Button>
+            <div className="py-16 border-t border-[var(--line-subtle)]">
+              <p className="text-2xl text-[var(--ink-muted)] font-display mb-8">{dictionary.dashboard.noMarkets}</p>
+              <Link 
+                href={`/${locale}/dashboard?series=new`}
+                className="inline-flex items-center text-[var(--accent)] hover:text-[var(--accent-dark)] font-medium text-lg transition-colors group"
+              >
+                {dictionary.dashboard.newMarket}
+                <ArrowRight className="size-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Link>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Market</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Next Date</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {workspace.markets.map((market) => {
-                  const nextOccurrence = getNextOccurrence(market.occurrences);
-                  return (
-                    <TableRow key={market.id} className="group cursor-pointer">
-                      <TableCell>
-                        <Link href={`/${locale}/dashboard?series=${market.slug}`} className="block">
-                          <div className="font-medium text-[var(--ink)] group-hover:text-[var(--ink-soft)] transition-colors">
-                            {market.title || dictionary.dashboard.newMarket}
-                          </div>
-                          <div className="text-xs text-[var(--ink-muted)] line-clamp-1">{market.city}</div>
-                        </Link>
-                      </TableCell>
-                      <TableCell>
-                        <StatusPill locale={locale} status={market.status} />
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2 text-sm text-[var(--ink-soft)]">
-                          {nextOccurrence ? (
-                            <>
-                              <CalendarDays className="size-3.5" />
-                              <span>{formatDate(nextOccurrence.startAt, locale)}</span>
-                            </>
-                          ) : (
-                            <span className="text-[var(--ink-muted)]">-</span>
-                          )}
+            <ul className="flex flex-col">
+              {workspace.markets.map((market) => {
+                const nextOccurrence = getNextOccurrence(market.occurrences);
+                return (
+                  <li key={market.id} className="border-t border-[var(--line-subtle)] group first:border-t-0">
+                    <Link 
+                      href={`/${locale}/dashboard?series=${market.slug}`} 
+                      className="flex flex-col sm:flex-row sm:items-center justify-between py-8 gap-4"
+                    >
+                      <div className="space-y-3 group-hover:translate-x-4 transition-transform duration-500 ease-out">
+                        <h3 className="font-display text-3xl md:text-4xl text-[var(--ink)] group-hover:text-[var(--accent)] transition-colors leading-none">
+                          {market.title || dictionary.dashboard.newMarket}
+                        </h3>
+                        <div className="flex items-center gap-3 text-[var(--ink-muted)] text-sm md:text-base">
+                          <span>{market.city || "Ingen by"}</span>
+                          <span className="w-1 h-1 rounded-full bg-[var(--line-strong)]" />
+                          <StatusPill locale={locale} status={market.status} />
                         </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button asChild variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Link href={`/${locale}/dashboard?series=${market.slug}`}>
-                            <Edit2 className="size-4" />
-                            {locale === "da" ? "Rediger" : "Edit"}
-                          </Link>
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
+                      </div>
+                      
+                      <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-4 text-right">
+                        {nextOccurrence ? (
+                          <div className="text-[var(--ink)] font-mono text-sm md:text-base">
+                            {formatDate(nextOccurrence.startAt, locale)}
+                          </div>
+                        ) : (
+                          <div className="text-[var(--ink-muted)] italic text-sm md:text-base">
+                            Ingen datoer
+                          </div>
+                        )}
+                        <ArrowRight className="size-6 text-[var(--accent)] opacity-0 sm:-translate-x-4 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500 ease-out hidden sm:block" />
+                      </div>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
           )}
         </section>
 
-        {/* Sidebar */}
-        <aside className="space-y-6">
-          <div className="flex items-center justify-between border-b border-[var(--line)] pb-4">
-            <h2 className="font-display text-2xl text-[var(--ink)]">
-              {dictionary.dashboard.latestRevision}
-            </h2>
-          </div>
+        {/* Minimalist Sidebar */}
+        <aside>
+          <h2 className="font-display text-2xl text-[var(--ink)] mb-8">
+            {dictionary.dashboard.latestRevision}
+          </h2>
 
-          <div className="relative before:absolute before:inset-y-0 before:left-3 before:w-px before:bg-[var(--line-strong)] space-y-6 pt-2">
+          <div className="space-y-10 border-l border-[var(--line-strong)] pl-8">
             {workspace.revisions.length > 0 ? (
               workspace.revisions.map((revision) => (
-                <div className="relative pl-8" key={revision.id}>
-                  {/* Timeline Dot */}
-                  <div className="absolute left-[-2px] top-1.5 w-7 h-7 rounded-full border-[6px] border-[var(--paper)] bg-[var(--ink)]" />
+                <div className="relative group" key={revision.id}>
+                  {/* Subtle timeline marker */}
+                  <div className="absolute -left-[37px] top-2 w-2 h-2 rounded-full bg-[var(--accent)] opacity-50 group-hover:opacity-100 group-hover:scale-150 transition-all duration-300" />
                   
-                  {/* Revision Card */}
-                  <div className="rounded-xl border border-[var(--line)] bg-[var(--surface)] p-4 hover:border-[var(--ink-muted)] transition-colors">
-                    <div className="flex flex-col gap-2">
-                      <div className="flex flex-wrap items-start justify-between gap-2">
-                        <div className="font-medium text-sm text-[var(--ink)] line-clamp-1 pr-2">
-                          {revision.payload.title}
-                        </div>
-                        <StatusPill locale={locale} status={revision.status} />
-                      </div>
-                      <div className="text-xs text-[var(--ink-muted)] line-clamp-1 flex items-center gap-1">
-                        <ChevronRight className="size-3" />
-                        {revision.payload.addressLine}
-                      </div>
+                  <div className="space-y-2">
+                    <div className="flex items-start justify-between gap-4">
+                      <h4 className="font-medium text-[var(--ink)] leading-snug group-hover:text-[var(--accent)] transition-colors">
+                        {revision.payload.title || "Uden titel"}
+                      </h4>
+                    </div>
+                    <p className="text-sm text-[var(--ink-muted)] leading-relaxed">
+                      {revision.payload.addressLine || 'Ingen adresse'}
+                    </p>
+                    <div className="pt-2">
+                      <StatusPill locale={locale} status={revision.status} />
                     </div>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="relative pl-8">
-                <div className="absolute left-[2px] top-2 w-5 h-5 rounded-full border-4 border-[var(--paper)] bg-[var(--line-strong)]" />
-                <div className="text-sm text-[var(--ink-soft)] pt-1.5">
+              <div className="relative">
+                <div className="absolute -left-[37px] top-2 w-2 h-2 rounded-full bg-[var(--line-strong)]" />
+                <p className="text-[var(--ink-muted)] italic">
                   {locale === "da"
                     ? "Ingen historik endnu."
                     : "No revision history yet."}
-                </div>
+                </p>
               </div>
             )}
           </div>

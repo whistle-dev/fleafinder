@@ -90,84 +90,93 @@ export function Header({
 			{open ? <div aria-hidden="true" className="h-[calc(4.75rem+var(--safe-top))] md:hidden" /> : null}
 			<header
 				className={cn(
-					'sticky top-0 z-50 w-full border-transparent md:mx-auto md:max-w-5xl md:rounded-md md:border md:transition-all md:ease-out md:mt-4',
+					'sticky top-0 z-50 w-full transition-transform duration-300 ease-out md:px-5 lg:px-8',
 					{
-						'fixed inset-x-0 top-0 md:sticky md:inset-auto md:top-4':
-							open,
-						'bg-[var(--surface)]/95 supports-[backdrop-filter]:bg-[var(--surface)]/50 border-b border-[var(--line)] md:border backdrop-blur-lg md:top-4 md:max-w-4xl md:shadow':
-							scrolled && !open,
-						'bg-[var(--surface)]/95 border-b border-[var(--line)]':
-							open,
+						'fixed inset-x-0 top-0 md:sticky md:inset-auto': open,
+						'md:translate-y-4': scrolled && !open,
 					},
 				)}
 			>
-			<nav
-				className={cn(
-					'flex h-[calc(4.75rem+var(--safe-top))] w-full items-center justify-between pl-[calc(1.25rem+var(--safe-left))] pr-[calc(1.25rem+var(--safe-right))] pt-[var(--safe-top)] md:h-14 md:px-4 md:pt-0 md:transition-all md:ease-out',
-					{
-						'md:px-2': scrolled,
-					},
-				)}
-			>
-				{logo}
-				<div className="hidden items-center gap-2 md:flex">
-					{links.map((link, i) => (
-						<Link key={i} className={buttonVariants({ variant: 'ghost' })} href={link.href}>
-							{link.label}
-						</Link>
-					))}
-					{actions}
-				</div>
-				<Button
-					size="icon"
-					variant="outline"
-					type="button"
-					aria-expanded={open}
-					aria-controls={menuId}
-					aria-label={open ? 'Close menu' : 'Open menu'}
-					onClick={() => setOpen((current) => !current)}
-					className="size-11 rounded-2xl md:hidden"
+				<div
+					className={cn(
+						'mx-auto w-full transition-[background-color,border-color,box-shadow,border-radius] duration-300 ease-out md:max-w-[1200px]',
+						{
+							'border-b border-[var(--line)] bg-[var(--surface)]/95 supports-[backdrop-filter]:bg-[var(--surface)]/70 backdrop-blur-lg md:max-w-[1168px] md:rounded-[24px] md:border md:shadow-[0_18px_60px_rgba(7,12,2,0.18)]':
+								scrolled && !open,
+							'border-b border-[var(--line)] bg-[var(--surface)]/95 md:rounded-[24px] md:border md:shadow-[0_18px_60px_rgba(7,12,2,0.18)]':
+								open,
+							'md:border md:border-transparent': !scrolled && !open,
+						},
+					)}
 				>
-					<MenuToggleIcon open={open} className="size-5" duration={300} />
-				</Button>
-			</nav>
-
-			<div
-				id={menuId}
-				aria-hidden={!open}
-				className={cn(
-					'fixed inset-x-0 bottom-0 top-[calc(4.75rem+var(--safe-top))] z-50 border-b border-[var(--line)] bg-[var(--surface)]/95 supports-[backdrop-filter]:bg-[var(--surface)]/90 backdrop-blur-md md:hidden transition-[opacity,transform] duration-300 ease-out',
-					open ? 'pointer-events-auto opacity-100 translate-y-0' : 'pointer-events-none opacity-0 -translate-y-3',
-				)}
-			>
-				<div className="flex h-full min-h-[calc(100dvh-4.75rem-var(--safe-top))] w-full flex-col overflow-y-auto overscroll-contain pl-[calc(1.5rem+var(--safe-left))] pr-[calc(1.5rem+var(--safe-right))] pb-[calc(1.5rem+var(--safe-bottom))] pt-6 [WebkitOverflowScrolling:touch]">
-					<div className="flex w-full flex-col gap-y-3 pb-4">
-						{links.map((link, i) => (
-							<Link
-								key={link.label}
-								onClick={closeMenu}
-								className={cn(
-									'inline-flex items-center justify-end rounded-[var(--radius-lg)] px-4 py-3 text-right text-3xl font-display tracking-tight text-[var(--ink)] transition-all duration-500 ease-out hover:bg-[var(--surface-elevated)] hover:text-[var(--accent)]',
-									open ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'
-								)}
-								style={{ transitionDelay: `${100 + i * 50}ms` }}
-								href={link.href}
-							>
-								{link.label}
-							</Link>
-						))}
-					</div>
-					<div
+					<nav
 						className={cn(
-							'mt-4 flex w-full flex-col gap-2 transition-all duration-500 ease-out',
-							open ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+							'flex h-[calc(4.75rem+var(--safe-top))] w-full items-center justify-between pl-[calc(1rem+var(--safe-left))] pr-[calc(1rem+var(--safe-right))] pt-[var(--safe-top)] transition-[height,padding] duration-300 ease-out md:h-[4.5rem] md:px-6 md:pt-0 lg:px-7',
+							{
+								'md:h-[4.25rem] md:px-5 lg:px-6': scrolled && !open,
+							},
 						)}
-						style={{ transitionDelay: `${100 + links.length * 50}ms` }}
 					>
-						{mobileActions || actions}
+						{logo}
+						<div className="hidden items-center gap-2 md:flex">
+							{links.map((link, i) => (
+								<Link key={i} className={buttonVariants({ variant: 'ghost' })} href={link.href}>
+									{link.label}
+								</Link>
+							))}
+							{actions}
+						</div>
+						<Button
+							size="icon"
+							variant="outline"
+							type="button"
+							aria-expanded={open}
+							aria-controls={menuId}
+							aria-label={open ? 'Close menu' : 'Open menu'}
+							onClick={() => setOpen((current) => !current)}
+							className="size-11 rounded-2xl md:hidden"
+						>
+							<MenuToggleIcon open={open} className="size-5" duration={300} />
+						</Button>
+					</nav>
+				</div>
+
+				<div
+					id={menuId}
+					aria-hidden={!open}
+					className={cn(
+						'fixed inset-x-0 bottom-0 top-[calc(4.75rem+var(--safe-top))] z-50 border-b border-[var(--line)] bg-[var(--surface)]/95 supports-[backdrop-filter]:bg-[var(--surface)]/90 backdrop-blur-md md:hidden transition-[opacity,transform] duration-300 ease-out',
+						open ? 'pointer-events-auto opacity-100 translate-y-0' : 'pointer-events-none opacity-0 -translate-y-3',
+					)}
+				>
+					<div className="flex h-full min-h-[calc(100dvh-4.75rem-var(--safe-top))] w-full flex-col overflow-y-auto overscroll-contain pl-[calc(1.5rem+var(--safe-left))] pr-[calc(1.5rem+var(--safe-right))] pb-[calc(1.5rem+var(--safe-bottom))] pt-6 [WebkitOverflowScrolling:touch]">
+						<div className="flex w-full flex-col gap-y-3 pb-4">
+							{links.map((link, i) => (
+								<Link
+									key={link.label}
+									onClick={closeMenu}
+									className={cn(
+										'inline-flex items-center justify-end rounded-[var(--radius-lg)] px-4 py-3 text-right text-3xl font-display tracking-tight text-[var(--ink)] transition-all duration-500 ease-out hover:bg-[var(--surface-elevated)] hover:text-[var(--accent)]',
+										open ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'
+									)}
+									style={{ transitionDelay: `${100 + i * 50}ms` }}
+									href={link.href}
+								>
+									{link.label}
+								</Link>
+							))}
+						</div>
+						<div
+							className={cn(
+								'mt-4 flex w-full flex-col gap-2 transition-all duration-500 ease-out',
+								open ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+							)}
+							style={{ transitionDelay: `${100 + links.length * 50}ms` }}
+						>
+							{mobileActions || actions}
+						</div>
 					</div>
 				</div>
-			</div>
 			</header>
 		</>
 	);

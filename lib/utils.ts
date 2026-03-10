@@ -25,7 +25,7 @@ export function formatDate(date: string, locale: Locale, options?: Intl.DateTime
           dateStyle: "medium",
           ...options
         }
-  ).format(new Date(date));
+  ).format(new Date(date)).replace(/\.\./g, '.');
 }
 
 export function formatTimeRange(startAt: string, endAt: string, locale: Locale) {

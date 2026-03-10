@@ -53,8 +53,7 @@ export function SiteChrome({
           links={[
             { label: dictionary.navigation.explore, href: `/${locale}/markets` },
             ...(profile ? [
-              { label: dictionary.navigation.dashboard, href: `/${locale}/dashboard` },
-              ...(profile.role === "admin" ? [{ label: dictionary.navigation.admin, href: `/${locale}/admin` }] : [])
+              { label: dictionary.navigation.dashboard, href: `/${locale}/dashboard` }
             ] : [])
           ]}
           actions={
